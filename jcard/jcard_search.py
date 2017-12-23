@@ -119,7 +119,11 @@ class Jcard(BasePhantomjs):
             debug(r.text)
             return None
         else:
-            return ':'.join((j['data'][0]['ip'], j['data'][0]['port']))
+            ip_port = ':'.join((j['data'][0]['ip'], str(j['data'][0]['port'])))
+            expire_time = j['data'][0].get('expire_time',
+                                           (datetime.datetime.now() + datetime.timedelta(minutes=10)).strftime(
+                                               '%Y-%m-%d %H:%M:%S'))
+            return ip_port, expire_time
 
     def run(self):
         self.read_preset_data()
@@ -140,19 +144,13 @@ class Jcard(BasePhantomjs):
                         if u'您的查询次数太频繁' in html:
                             print(u'您的查询次数太频繁')
                         raise MaxIPException()
-                    if self.rule.get('show_success', ''):
-                        # 登录成功会显示的
-                        display_name = driver.find_elements(self.get_by(self.rule['show_success']['type']),
-                                                            self.rule['show_success']['name'])
-                        if len(display_name) > 0:
-                            debug(encode_info(u'登录成功'))
-                        else:
-                            raise_error(encode_info(u'登录失败: {}'.format(username)))
-
-                    driver.quit()
+                    try:
+                        driver.quit()
+                    except:
+                        pass
                     debug(encode_info(u'开始获取结果: {}'.format(username)))
                     result = self.get_search_result(html)
-                    line = u'----'.join((username_password, ) + result)
+                    line = u'----'.join((username_password,) + result)
                     debug(encode_info(line))
                     self.write_oneline(line)
 
@@ -161,14 +159,17 @@ class Jcard(BasePhantomjs):
                     debug(encode_info(u'登录失败: {}'.format(username)))
             except MaxIPException:
                 # TODO 更换ip，重试
-                pass
+                # 增加ip计数
+                self.error_proxy[self.proxy] += 1
             except Exception as e:
                 debug(encode_info(str(e)))
 
             if not is_success:
                 debug(encode_info(u'获取失败: {}'.format(username_password)))
                 self.rasie_error_count(username_password, self.upq)
+            debug(encode_info(u'---'*20))
 
+        debug(encode_info(u'{:=^20}'.format(u'结束')))
 
 if __name__ == '__main__':
     j = Jcard()
