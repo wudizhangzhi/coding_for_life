@@ -52,8 +52,6 @@ class Tui360(BasePhantomjs):
         }
         res = sess.post(self.url_search, data=data, timeout=10)
         res.encoding = 'utf8'
-        with open('test.html', 'wb') as f:
-            f.write(res.content)
         root = etree.HTML(res.text)
         tds = root.xpath('//tbody[@id="orderList"]/tr/td')
         assert len(tds) == 5, u'表格结果数量不一致'

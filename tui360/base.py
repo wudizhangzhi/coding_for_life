@@ -6,14 +6,11 @@ from ConfigParser import ConfigParser
 from collections import defaultdict
 
 #######################
-CONFIG_PATH = 'config.ini'
 BY_CLASS = 'class'
 BY_ID = 'id'
 #######################
 
-assert os.path.exists(CONFIG_PATH), u'配置文件config.ini不存在'
-cf = ConfigParser()
-cf.read(CONFIG_PATH)
+
 import logging
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -74,7 +71,11 @@ def raise_error(e):
 
 
 class BasePhantomjs(object):
-    def __init__(self):
+    def __init__(self, configpath='config.ini'):
+        assert os.path.exists(configpath), u'配置文件config.ini不存在'
+        self.cf = ConfigParser()
+        self.cf.read(configpath)
+
         self.url_login = ''
         self.interval_time = 3
         self.rule = {
@@ -89,8 +90,8 @@ class BasePhantomjs(object):
             'captcha_tuple': ('', '', '', ''),  # x, y, w, h
         }
         self.captcha_mode = 2
-        self.outputfilename = cf.get('main', 'output')
-        self.inputputfilename = cf.get('main', 'input')
+        self.outputfilename = self.cf.get('main', 'output')
+        self.inputputfilename = self.cf.get('main', 'input')
         self.preset_data = defaultdict(Queue)  # 预设信息
         self.error_count = defaultdict(int)  # 错误次数
         self.upq = Queue()  # 账户密码
@@ -105,14 +106,13 @@ class BasePhantomjs(object):
             raise_error(encode_info(u'请输入正确的验证码!'))
         return chaptcha_code
 
-    @staticmethod
-    def yundama(captcha_filename=None):  # 云打码
+    def yundama(self, captcha_filename=None):  # 云打码
         from yundama import recognize_by_http
         debug(encode_info(u'验证码地址: %r' % captcha_filename))
         debug(encode_info(u'验证码是否存在: %r' % os.path.exists(captcha_filename)))
 
-        result, balanse = recognize_by_http(captcha_filename, cf.get('captcha', 'username'),
-                                            cf.get('captcha', 'password'))
+        result, balanse = recognize_by_http(captcha_filename, self.cf.get('captcha', 'username'),
+                                            self.cf.get('captcha', 'password'))
         debug(encode_info(u'余额: %r' % balanse))
         return result
 
@@ -130,7 +130,7 @@ class BasePhantomjs(object):
         else:
             return By.NAME
 
-    def login(self, username, password):
+    def init_driver(self):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
         dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
@@ -151,6 +151,10 @@ class BasePhantomjs(object):
         )
         # 隐式等待5秒，可以自己调节
         driver.implicitly_wait(5)
+        return driver
+
+    def login(self, username, password):
+        driver = self.init_driver()
         try:
             driver.set_page_load_timeout(60)
             # driver.maximize_window()
@@ -218,7 +222,7 @@ class BasePhantomjs(object):
                     img_crop.close()
                     screenshot.close()
 
-                    if cf.getint('main', 'captcha_mode') == 0:
+                    if self.cf.getint('main', 'captcha_mode') == 0:
                         yzm = self.yundama(_captcha_filename)
 
                     else:
