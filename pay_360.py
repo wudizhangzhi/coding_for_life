@@ -152,16 +152,16 @@ class Pay360:
         return chaptcha_code
 
     @staticmethod
-    def yundama(captcha_filename=None):  # 云打码
-        from yundama import recognize_common, recognize_by_http
+    def yundama(username, password, captcha_filename=None):  # 云打码
+        from yundama import recognize_by_http
         captcha_filename = captcha_filename
         debug(encode_info(u'验证码地址: %r' % captcha_filename))
         debug(encode_info(u'验证码是否存在: %r' % os.path.exists(captcha_filename)))
 
         # result, balanse = recognize_common(captcha_filename, self.captcha_username,
         #                                    self.captcha_password)
-        result, balanse = recognize_by_http(captcha_filename, 'jsmtxx',
-                                            'qwer12345')
+        result, balanse = recognize_by_http(captcha_filename, username,
+                                            password)
         debug(encode_info(u'余额: %r' % balanse))
         return result
 
@@ -472,11 +472,7 @@ class Pay360:
         captcha_mode = raw_input(encode_info(u'请输入识别验证码的模式(0:超人打码 ;1:人工识别; 2:云打码 默认2): ')) or 2
         self.captcha_mode = int(captcha_mode)
         if self.captcha_mode in [0, 2]:
-            DEFAULT = {0: {'username': '15914384938',
-                           'password': '15914384938'},
-                       2: {'username': 'jsmtxx',
-                           'password': 'qwer12345',
-                           }
+            DEFAULT = {
                        }
             try:
                 default_username = DEFAULT[self.captcha_mode]['username']

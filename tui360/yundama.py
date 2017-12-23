@@ -14,6 +14,7 @@ from ctypes import *
 # 1. http://www.yundama.com/index/reg/developer 注册开发者账号
 # 2. http://www.yundama.com/developer/myapp 添加新软件
 # 3. 使用添加的软件ID和密钥进行开发，享受丰厚分成
+import requests
 
 appId = 1  # 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
 appKey = '22cc5376925e9387a23cf797cb9ba745'  # 软件密钥，开发者分成必要参数。登录开发者后台【我的软件】获得！
@@ -103,9 +104,17 @@ class YDMHttp:
 
     def request(self, fields, files=[]):
         try:
-            response = post_url(self.apiurl, fields, files)
-            response = json.loads(response)
+            # response = post_url(self.apiurl, fields, files)
+            # print('response', response)
+            # response = json.loads(response)
+            if files:
+                f = open(files['file'], 'rb')
+                files['file'] = f
+            # _files = files if files else None
+            response = requests.post(self.apiurl, data=fields, files=files if files else None, timeout=10)
+            response = response.json()
         except Exception as e:
+            print(e)
             response = None
         return response
 
@@ -248,4 +257,5 @@ def recognize_by_http(filename, username, password):
 
 
 if __name__ == '__main__':
-    print(recognize_by_http('tmp_captcha_gzyz0002.png', '', ''))
+    from base import cf
+    print(recognize_by_http('tmp/captcha_bd@sjyx8.cn.png', cf.get('captcha', 'username'), cf.get('captcha', 'password')))
