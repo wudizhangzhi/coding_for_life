@@ -108,4 +108,7 @@ ENV/
 *.xlsx
 *.txt
 *.png
+*.jpg
+*.zip
 *.ini
+*.dll

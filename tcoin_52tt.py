@@ -36,12 +36,12 @@ class FuckWangzhijianError(Exception): pass
 FORMAT = u"""
     data.txt文件请以下列格式书写, 并另存为utf8格式:
     
-    用户名1：密码1：支付密码1
-    游戏名1----账户1----面值----数量
-    游戏名2----账户2----面值----数量
+    用户名1:密码1:支付密码1:游戏名1
+    账户1----面值
+    账户2----面值
     
-    用户名2：密码2：支付密码2
-    游戏名3----账户3----面值----数量
+    用户名2：密码2：支付密码2:游戏名2
+    账户3----面值
 """.encode('gbk')
 
 
@@ -249,25 +249,26 @@ class Wangzhijian:
         :return: [['game_v', 'account', 'par', 'count', 'game_title'],]
         '''
         tmplist = gamelist.split('----')
-        game_title = tmplist[0].strip()
-        game_account = tmplist[1].strip()
-        game_par = tmplist[2].strip()
-        par_count = tmplist[3].strip()
+        # game_title = tmplist[0].strip()
+        game_account = tmplist[0].strip()
+        game_par = tmplist[1].strip()
+        # par_count = tmplist[2].strip()
+        par_count = 1
         game_value = None
         _game_title = None
         # search for game value
         # self.game_dict 是网络获取的游戏名称字典
         # gamelist 是文件写的游戏名称
         for title, v in self.game_dict.iteritems():
-            game_title_encoder = game_title.decode(self.CHARSET)
+            game_title_encoder = self.game_title.decode(self.CHARSET)
             if game_title_encoder in title:
                 game_value = v
                 _game_title = title
                 break
         if not game_value:
-            logging.error('can not find game value: %r' % game_title)
+            logging.error('can not find game value: %r' % self.game_title)
 
-            raise FuckWangzhijianError('can not find game value: %r' % game_title)
+            raise FuckWangzhijianError('can not find game value: %r' % self.game_title)
         return [game_value, game_account, game_par, par_count, _game_title]
 
     # def writer_data_left(self):
@@ -413,7 +414,7 @@ class Wangzhijian:
                 if not line.strip():
                     continue
 
-                elif '----' in line:  # 游戏名1----账户1----面值----数量
+                elif '----' in line:  # 游戏名1----账户1----面值
                     # 访问网页，获取数据
                     self.get_game_dict()
                     logging.debug(self.game_dict)
@@ -422,8 +423,9 @@ class Wangzhijian:
                     game_id = _new_game_list[0]
                     game_account = _new_game_list[1]
                     par = _new_game_list[2]
-                    par_count = _new_game_list[3]
-                    game_title = _new_game_list[4]
+                    # par_count = _new_game_list[3]
+                    par_count = 1
+                    # game_title = _new_game_list[4]
                     # 获取数据
                     self.get_uid_and_so_on(game_account, game_id)
                     time.sleep(self.interval_time)
@@ -433,17 +435,19 @@ class Wangzhijian:
                         logging.debug('balance not enough: %r' % self.balance)
                         raise FuckWangzhijianError('balance not enough: %r' % self.balance)
                     # 开始分发
-                    self.dist_values(self.username, self.paypwd, game_title, game_id, game_account, par, par_count)
+                    # self.dist_values(self.username, self.paypwd, game_title, game_id, game_account, par, par_count)
+                    self.dist_values(self.username, self.paypwd, self.game_title, game_id, game_account, par, par_count)
                     time.sleep(self.interval_time)
                     print('sleep %r' % self.interval_time)
 
-                elif len(line.split(':')) == 3:  # 账号：密码：支付密码
+                elif len(line.split(':')) == 4:  # 账号：密码：支付密码：游戏名称
                     self.last_username_password_paypwd = line
                     # 登录
                     _line = line.strip().split(':')
                     self.username = _line[0].strip()
                     password = _line[1].strip()
                     self.paypwd = _line[2].strip()
+                    self.game_title = _line[-1]
                     self.login(self.username, password)
                     time.sleep(self.interval_time)
                     print('sleep %r' % self.interval_time)

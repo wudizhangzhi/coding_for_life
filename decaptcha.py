@@ -1,15 +1,10 @@
 # -*- coding:utf-8 -*-
-import requests
-import sys
+from sys import argv
 # QQ超人打码支持类库
 import ctypes
-from os.path import join, dirname, abspath, exists
-import os
-lib_abspath = join(dirname(__file__), 'dc.dll')
-if os.path.exists(lib_abspath):
-    lib_path = lib_abspath
-else:
-    lib_path = 'dc.dll'
+from os.path import join, dirname
+
+lib_path = join(dirname(argv[0]), 'dc.dll')
 dll = ctypes.windll.LoadLibrary(lib_path)
 
 
@@ -78,14 +73,17 @@ class dcVerCode:
 
 
 if __name__ == '__main__':
-    client = dcVerCode("username", "password", "0");  # 超人打码帐号,超人打码密码,软件ID
-    # img = open('image.png', 'rb')
-    # buffer = img.read()
-    # img.close()
+    try:
+        client = dcVerCode("username", "password", "0")  # 超人打码帐号,超人打码密码,软件ID
+        # img = open('image.png', 'rb')
+        # buffer = img.read()
+        # img.close()
 
-    # 查询帐号余额
-    print (client.getUserInfo())
-
+        # 查询帐号余额
+        print (client.getUserInfo())
+    except Exception as e:
+        print(e)
+    raw_input('wait')
     # # 按图片字节数据识别
     # yzm, imageId = client.recByte(buffer)
     # print(yzm, imageId)
@@ -94,8 +92,3 @@ if __name__ == '__main__':
     # yzm, imageId = client.recYZM("image.png")
     # print (yzm, imageId)
     # client.reportErrA(imageId) 只有在验证码识别错误时才运行这个方法,恶意提交将会受到惩罚
-
-    r = requests.get(
-        'https://passport.360.cn/captcha.php?m=create&app=i360&scene=login&userip=dbpCvjyQpVvTWpAiLTnIow%3D%3D&level=default&sign=e6cdb7&r=1508051292&_=1508051293048')
-    yzm, imageId = client.recByte(r.content)
-    print(yzm, imageId)

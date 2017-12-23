@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文件上传</title>
+<h1>文件上传</h1>
+<form method="POST" enctype="multipart/form-data">
+     {{ form.hidden_tag() }}
+     {{ form.attachment }}
+     <input type="file" name="file" multiple="multiple" style="font-size:20px;width:300px;height:200px;"/>
+     {{ form.add_upload(style="font-size:20px;width:300px;height:200px;") }}
+</form>
+
+{% if file_url %}
+<br><img src="{{ file_url }}">
+{% endif %}
