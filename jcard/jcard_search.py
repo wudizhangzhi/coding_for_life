@@ -9,7 +9,7 @@ from lxml import etree
 import requests
 from lxml import etree
 import json
-from user_agent import generate_user_agent
+# from user_agent import generate_user_agent
 from base.base import *
 from base.yundama import recognize_by_http
 
@@ -70,7 +70,7 @@ class Jcard(BasePhantomjs):
         self.separator = self.cf.get('main', 'separator')
         self.url_login = 'http://www.jcard.cn/Bill/TradeSearch.aspx'
         self.rule = RULE
-        self.use_proxy = True
+        self.use_proxy = False
 
     def read_preset_data(self):
         '''
@@ -139,10 +139,8 @@ class Jcard(BasePhantomjs):
                 if driver:
                     html = driver.page_source
                     if u'alert' in html:
-                        root = etree.HTML(html)
-                        print(root.xpath('//script[@language="javascript"]/text()'))
                         if u'您的查询次数太频繁' in html:
-                            print(u'您的查询次数太频繁')
+                            self.use_proxy = True
                         raise MaxIPException()
                     try:
                         driver.quit()
@@ -160,16 +158,19 @@ class Jcard(BasePhantomjs):
             except MaxIPException:
                 # TODO 更换ip，重试
                 # 增加ip计数
-                self.error_proxy[self.proxy] += 1
+                if self.proxy:
+                    self.error_proxy[self.proxy] += 1
             except Exception as e:
                 debug(encode_info(str(e)))
 
             if not is_success:
                 debug(encode_info(u'获取失败: {}'.format(username_password)))
                 self.rasie_error_count(username_password, self.upq)
-            debug(encode_info(u'---'*20))
+            debug(encode_info(u'---' * 20))
 
         debug(encode_info(u'{:=^20}'.format(u'结束')))
+        input('')
+
 
 if __name__ == '__main__':
     j = Jcard()

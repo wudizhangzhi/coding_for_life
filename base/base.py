@@ -21,7 +21,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
-from user_agent import generate_user_agent
+# from user_agent import generate_user_agent
+from agents import AGENTS_ALL
+from random import choice
 from PIL import Image
 from Queue import Queue
 
@@ -141,7 +143,8 @@ class BasePhantomjs(object):
     def init_driver(self):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
-        dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
+        # dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
+        dcap["phantomjs.page.settings.userAgent"] = (choice(AGENTS_ALL))
         # 不载入图片，爬页面速度会快很多
         # dcap["phantomjs.page.settings.loadImages"] = False
         try:
