@@ -1,5 +1,6 @@
 # coding=utf8
 import sys
+from threading import Thread
 
 sys.path.append("..")
 import os
@@ -72,6 +73,7 @@ class Jcard(BasePhantomjs):
         self.rule = RULE
         self.use_proxy = False
         self.max_error_count = self.cf.get('main', 'max_error_count')
+        self.THREAD_NUM = self.cf.getint('main', 'thread_num')
 
     def read_preset_data(self):
         '''
@@ -126,9 +128,7 @@ class Jcard(BasePhantomjs):
                                                '%Y-%m-%d %H:%M:%S'))
             return ip_port, expire_time
 
-    def run(self):
-        self.read_preset_data()
-
+    def start_search(self):
         while not self.upq.empty():
             username_password = self.upq.get_nowait()
             is_success = False
@@ -185,6 +185,20 @@ class Jcard(BasePhantomjs):
                     debug(encode_info(u'获取失败: {}'.format(username_password)))
                     self.rasie_error_count(username_password, self.upq)
             debug(encode_info(u'---' * 20))
+
+    def run(self):
+        self.read_preset_data()
+
+        threading_pool = []
+        for i in xrange(self.THREAD_NUM):
+            t = Thread(target=self.start_search, name='thread_%s' % i)
+            threading_pool.append(t)
+
+        for t in threading_pool:
+            debug(encode_info(u'线程启动: %r' % t.getName()))
+            t.start()
+
+        [t.join() for t in threading_pool]
 
         debug(encode_info(u'{:=^20}'.format(u'结束')))
         raw_input(encode_info(u'按回车键结束'))
