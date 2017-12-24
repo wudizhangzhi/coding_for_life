@@ -452,7 +452,7 @@ class ChangePayPass(object):
 
     def write_reset_paypassword_result(self, line):
         debug(encode_info(u'开始写结果: %s' % line))
-        with open('result.txt', 'a') as f:
+        with open('result_bk.txt', 'a') as f:
             f.write(encode_info(line + '\n'))
         debug(encode_info(u'写结果结束'))
 

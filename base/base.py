@@ -71,9 +71,15 @@ def encode_info(content):
         return content.encode('utf-8')
 
 
-def raise_error(e):
+def raise_error(e, et=None):
     logging.error(e)
-    raise Exception(e)
+    if et is None:
+        raise Exception(e)
+    else:
+        raise et(e)
+
+
+class CaptchaException(Exception): pass
 
 
 class BasePhantomjs(object):
@@ -104,7 +110,9 @@ class BasePhantomjs(object):
         self.use_proxy = False
         # TODO delete
         self.error_proxy = defaultdict(int)
+        self.proxy = None
         self.proxy_pool = []
+        self.max_error_count = 5
 
     @staticmethod
     def recognize_captcha_by_yourself(captcha_filename):
@@ -189,10 +197,10 @@ class BasePhantomjs(object):
                                                 self.rule['startlogin']['name'])
                 btn_login.click()
 
-                element = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located(
-                        (self.get_by(self.rule['username']['type']), self.rule['username']['name']))
-                )
+            element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located(
+                    (self.get_by(self.rule['username']['type']), self.rule['username']['name']))
+            )
 
             # 填写用户名密码
             debug(encode_info(u'键入用户名: %r' % username))
@@ -251,7 +259,7 @@ class BasePhantomjs(object):
                     debug(encode_info(u'验证码解码为: %r' % yzm))
                     if not yzm.strip():
                         # self.error_dict[username] = 0
-                        raise_error(encode_info(u'解码验证码失败'))
+                        raise_error(encode_info(u'解码验证码失败'), et=CaptchaException)
                     debug(encode_info(u'填入验证码'))
                     input_captcha = driver.find_element(self.get_by(self.rule['captcha']['type']),
                                                         self.rule['captcha']['name'])
@@ -290,7 +298,10 @@ class BasePhantomjs(object):
                 else:
                     driver.quit()
                     driver = None
-        except Exception as e:
+        except CaptchaException as e:
+            raise e
+
+        except TimeoutException as e:
             if self.use_proxy:
                 if isinstance(e, TimeoutException):
                     # 代理ip增加错误一次
@@ -299,6 +310,10 @@ class BasePhantomjs(object):
                         self.delete_proxy(self.proxy)
                     else:
                         self.error_proxy[self.proxy] += 1
+            raise e
+
+        except Exception as e:
+
             debug(e)
             driver.quit()
             driver = None
@@ -337,18 +352,27 @@ class BasePhantomjs(object):
 
         logging.debug(self.preset_data)
 
-    def rasie_error_count(self, key, queue=None):
-        count = self.error_count.get(key, 0)
-        if count > 3:
-            line = u'{}: 超过重试次数'.format(key)
-            debug(encode_info(line))
-            self.write_oneline(line)
-        else:
-            self.error_count[key] += 1
+    def rasie_error_count(self, key, queue=None, reset=False):
+        if reset:
+            debug(encode_info(u'重新计数，放回队列'))
+            self.error_count[key] = 0
             if queue is None:
                 self.upq.put(key)
             else:
                 queue.put(key)
+        else:
+            count = self.error_count.get(key, 0)
+            if count > self.max_error_count:
+                line = u'{}: 超过重试次数'.format(key)
+                debug(encode_info(line))
+                self.write_oneline(line)
+            else:
+                debug(encode_info(u'放回任务队列: {}'.format(key)))
+                self.error_count[key] += 1
+                if queue is None:
+                    self.upq.put(key)
+                else:
+                    queue.put(key)
 
     def get_proxy(self):
         '''

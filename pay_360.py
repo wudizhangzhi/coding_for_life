@@ -871,7 +871,7 @@ class Pay360:
 
     def write_reset_paypassword_result(self):
         debug(encode_info(u'开始写结果: %r' % self.change_pay_password_result))
-        with open('result.txt', 'w') as f:
+        with open('result_bk.txt', 'w') as f:
             for k, v in self.change_pay_password_result.iteritems():
                 f.write(encode_info('----'.join((k, v)) + '\n'))
         debug(encode_info(u'写结果结束'))

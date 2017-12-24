@@ -81,7 +81,7 @@ class ExportReport(object):
         self.search_before_days = 0
         self.separator = '----'
         self.preset_filename = 'data.txt'
-        self.result_filename = 'result.txt'
+        self.result_filename = 'result_bk.txt'
         self.preset_data_dict = {}  # 预设的字典
         self.search_result = {}  # 查询的结果
         self.game_dict = {}  # 游戏名称和id字典
