@@ -1,11 +1,14 @@
 # coding=utf8
+import sys
+sys.path.append("..")
 import os
 from lxml import etree
 
 import requests
-from user_agent import generate_user_agent
+from base.base import *
+from base.yundama import recognize_by_http
+# from user_agent import generate_user_agent
 
-from base import BasePhantomjs, BY_ID, BY_CLASS, debug, encode_info
 
 RULE = {
     # 'startlogin': {'type': BY_CLASS, 'name': ''},
@@ -41,7 +44,8 @@ class Tui360(BasePhantomjs):
         sess = requests.Session()
         sess.cookies.update(dict([(i['name'], i['value']) for i in cookies]))
         sess.headers = {
-            'User-Agent': generate_user_agent(os=('linux', 'mac')),
+            # 'User-Agent': generate_user_agent(os=('linux', 'mac')),
+            'User-Agent': choice(AGENTS_ALL),
             'Host': 'tui.360.cn',
             'Referer': 'http://tui.360.cn/usercheck/search',
         }

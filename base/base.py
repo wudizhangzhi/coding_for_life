@@ -21,6 +21,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
+# 转化exe有问题
 # from user_agent import generate_user_agent
 from agents import AGENTS_ALL
 from random import choice
@@ -108,7 +109,7 @@ class BasePhantomjs(object):
         self.error_count = defaultdict(int)  # 错误次数
         self.upq = Queue()  # 账户密码
         self.use_proxy = False
-        # TODO delete
+        # TODO improve
         self.error_proxy = defaultdict(int)
         self.proxy = None
         self.proxy_pool = []
@@ -163,7 +164,7 @@ class BasePhantomjs(object):
             phantomjs_driver_path = 'phantomjs'
             debug(e)
         if self.use_proxy:
-            self.proxy = self.get_proxy()
+            self.proxy = self._get_proxy()
             debug(encode_info(u'使用代理IP: {}'.format(self.proxy)))
             service_args = [
                 '--proxy={proxy}'.format(proxy=self.proxy),
@@ -306,8 +307,7 @@ class BasePhantomjs(object):
                 if isinstance(e, TimeoutException):
                     # 代理ip增加错误一次
                     if self.error_proxy[self.proxy] > 3:
-                        # TODO 删除ip
-                        self.delete_proxy(self.proxy)
+                        self._delete_proxy(self.proxy)
                     else:
                         self.error_proxy[self.proxy] += 1
             raise e
@@ -374,7 +374,7 @@ class BasePhantomjs(object):
                 else:
                     queue.put(key)
 
-    def get_proxy(self):
+    def _get_proxy(self):
         '''
         获取代理ip
         :return: 
@@ -395,9 +395,9 @@ class BasePhantomjs(object):
     def _fetch_proxy(self):
         '''
         利用接口获取ip，待继承
-        :return: 
+        :return:  proxy, expire_time
         '''
         pass
 
-    def delete_proxy(self, proxy):
+    def _delete_proxy(self, proxy):
         pass

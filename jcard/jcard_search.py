@@ -1,7 +1,5 @@
 # coding=utf8
 import sys
-from threading import Thread
-
 sys.path.append("..")
 import os
 from Queue import Queue
@@ -13,6 +11,8 @@ import json
 # from user_agent import generate_user_agent
 from base.base import *
 from base.yundama import recognize_by_http
+
+from threading import Thread
 
 RULE = {
     # 'startlogin': {'type': BY_CLASS, 'name': ''},
