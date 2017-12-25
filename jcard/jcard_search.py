@@ -173,17 +173,17 @@ class Jcard(BasePhantomjs):
                 # 增加ip计数
                 if self.proxy:
                     self.error_proxy[self.proxy] += 1
-                self.rasie_error_count(username_password, self.upq, reset=True)
+                self.raise_error_count(username_password, self.upq, reset=True)
             except CaptchaException:
-                self.rasie_error_count(username_password, self.upq, reset=True)
+                self.raise_error_count(username_password, self.upq, reset=True)
             except Exception as e:
                 debug(str(e))
                 if 'Unable to find element' in str(e):
                    debug(encode_info(u'找不到元素, 可能网速太慢, 重试'))
-                   self.rasie_error_count(username_password, self.upq, reset=True)
+                   self.raise_error_count(username_password, self.upq, reset=True)
                 else:
                     debug(encode_info(u'获取失败: {}'.format(username_password)))
-                    self.rasie_error_count(username_password, self.upq)
+                    self.raise_error_count(username_password, self.upq)
             debug(encode_info(u'---' * 20))
 
     def run(self):

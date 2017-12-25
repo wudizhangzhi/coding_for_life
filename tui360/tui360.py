@@ -71,6 +71,7 @@ class Tui360(BasePhantomjs):
         password = tmp[1].strip()
         driver = self.login(username, password)
         if driver:
+            # 登录成功后用cookie获取数据
             debug(encode_info(u'登录成功: {}'.format(username)))
             cookies = driver.get_cookies()
             driver.quit()
@@ -88,7 +89,7 @@ class Tui360(BasePhantomjs):
                     self.write_oneline(line)
                 except Exception as e:
                     debug(encode_info(str(e)))
-                    self.rasie_error_count(iptchannel_iptuser, queue=queue)
+                    self.raise_error_count(iptchannel_iptuser, queue=queue)
             return True
         else:
             return False
@@ -99,16 +100,18 @@ class Tui360(BasePhantomjs):
         while not self.upq.empty():
             username_password = self.upq.get_nowait()
             self.write_oneline(username_password)
-
+            search_success = True
             try:
                 # 搜索某一个账号密码下的数据
                 search_success = self.search_by_account(username_password)
+            except CaptchaException as e:
+                self.raise_error_count(username_password, reset=True)
             except Exception as e:
                 debug(encode_info(str(e)))
                 search_success = False
 
             if not search_success:
-                self.rasie_error_count(username_password, self.upq)
+                self.raise_error_count(username_password, self.upq)
 
         debug(encode_info(u'{:=^20}'.format(u'结束')))
 

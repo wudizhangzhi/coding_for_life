@@ -317,6 +317,7 @@ class BasePhantomjs(object):
             debug(e)
             driver.quit()
             driver = None
+            raise e
         return driver
 
     def write_oneline(self, line):
@@ -352,7 +353,7 @@ class BasePhantomjs(object):
 
         logging.debug(self.preset_data)
 
-    def rasie_error_count(self, key, queue=None, reset=False):
+    def raise_error_count(self, key, queue=None, reset=False):
         if reset:
             debug(encode_info(u'重新计数，放回队列'))
             self.error_count[key] = 0

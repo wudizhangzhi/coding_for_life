@@ -1,0 +1,30 @@
+[main]
+
+# 输出文件路径
+output = result.txt
+
+
+# 输入文件路径
+input = data.txt
+# 输入文件中分割账号密码的分隔符
+separator = ----
+
+# 间隔时间
+interval_time = 3
+
+# 最大错误次数
+max_error_count = 5
+
+##### 可选参数 #####
+
+thread_num = 4
+# 获取代理ip的接口地址
+proxy = http://exmaple.proxy.com/api/
+
+
+[captcha]
+# 模式, 0:云打码, 其他:手动
+captcha_mode = 0
+
+username = xxxxx
+password = xxxxx
