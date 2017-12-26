@@ -2,7 +2,6 @@
 import sys
 sys.path.append("..")
 import os
-from Queue import Queue
 from lxml import etree
 
 import requests
@@ -168,13 +167,15 @@ class Jcard(BasePhantomjs):
                         raise_error(encode_info(u'登录失败: {}'.format(username)))
                 else:
                     raise_error(encode_info(u'登录失败: {}'.format(username)))
-            except (MaxIPException, TimeoutException):
+            except (MaxIPException, TimeoutException) as e:
                 # TODO 更换ip，重试
+                debug(str(e))
                 # 增加ip计数
                 if self.proxy:
                     self.error_proxy[self.proxy] += 1
                 self.raise_error_count(username_password, self.upq, reset=True)
-            except CaptchaException:
+            except CaptchaException as e:
+                debug(str(e))
                 self.raise_error_count(username_password, self.upq, reset=True)
             except Exception as e:
                 debug(str(e))
@@ -190,7 +191,7 @@ class Jcard(BasePhantomjs):
         self.read_preset_data()
 
         threading_pool = []
-        for i in xrange(self.THREAD_NUM):
+        for i in range(self.THREAD_NUM):
             t = Thread(target=self.start_search, name='thread_%s' % i)
             threading_pool.append(t)
 
@@ -201,7 +202,7 @@ class Jcard(BasePhantomjs):
         [t.join() for t in threading_pool]
 
         debug(encode_info(u'{:=^20}'.format(u'结束')))
-        raw_input(encode_info(u'按回车键结束'))
+        input(encode_info(u'按回车键结束'))
 
 
 if __name__ == '__main__':

@@ -2,18 +2,12 @@
 import os
 import sys
 import time
-from ConfigParser import ConfigParser
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
+
 from collections import defaultdict
-
-#######################
-import datetime
-import requests
-
-BY_CLASS = 'class'
-BY_ID = 'id'
-#######################
-
-
 import logging
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -26,7 +20,22 @@ from selenium.webdriver import DesiredCapabilities
 from agents import AGENTS_ALL
 from random import choice
 from PIL import Image
-from Queue import Queue
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
+import datetime
+import requests
+
+#######################
+
+
+BY_CLASS = 'class'
+BY_ID = 'id'
+#######################
+
+
+
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -120,7 +129,7 @@ class BasePhantomjs(object):
         debug(encode_info(u'开始人工识别验证码'))
         img = Image.open(captcha_filename)
         img.show()
-        chaptcha_code = raw_input(encode_info(u'请输入验证码: '))
+        chaptcha_code = input(encode_info(u'请输入验证码: '))
         if not chaptcha_code:
             raise_error(encode_info(u'请输入正确的验证码!'))
         return chaptcha_code
