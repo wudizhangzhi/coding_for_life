@@ -84,8 +84,8 @@ def recognize_by_byte(filename, username, password):
 
 
 ################################################################################
-import httplib, mimetypes, urlparse, json, time
-
+# import httplib, mimetypes, urlparse, json, time
+import time
 
 class YDMHttp:
     # apiurl = 'http://api.yundama.com/api.php'
@@ -176,56 +176,6 @@ class YDMHttp:
 
 
 ######################################################################
-
-def post_url(url, fields, files=[]):
-    urlparts = urlparse.urlsplit(url)
-    return post_multipart(urlparts[1], urlparts[2], fields, files)
-
-
-def post_multipart(host, selector, fields, files):
-    content_type, body = encode_multipart_formdata(fields, files)
-    h = httplib.HTTP(host)
-    h.putrequest('POST', selector)
-    h.putheader('Host', host)
-    h.putheader('Content-Type', content_type)
-    h.putheader('Content-Length', str(len(body)))
-    h.endheaders()
-    h.send(body)
-    errcode, errmsg, headers = h.getreply()
-    return h.file.read()
-
-
-def encode_multipart_formdata(fields, files=[]):
-    BOUNDARY = 'WebKitFormBoundaryJKrptX8yPbuAJLBQ'
-    CRLF = '\r\n'
-    L = []
-    for field in fields:
-        key = field
-        value = fields[key]
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; name="%s"' % key)
-        L.append('')
-        L.append(value)
-    for field in files:
-        key = field
-        filepath = files[key]
-        L.append('--' + BOUNDARY)
-        L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filepath))
-        L.append('Content-Type: %s' % get_content_type(filepath))
-        L.append('')
-        L.append(open(filepath, 'rb').read())
-    L.append('--' + BOUNDARY + '--')
-    L.append('')
-    body = CRLF.join(L)
-    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
-    return content_type, body
-
-
-def get_content_type(filename):
-    return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
-
-
-######################################################################
 # 软件ＩＤ，开发者分成必要参数。登录开发者后台【我的软件】获得！
 appid = 1
 
@@ -246,13 +196,13 @@ def recognize_by_http(filename, username, password):
     uid = yundama.login()
     # 查询余额
     balance = yundama.balance()
-    print 'balance: %s' % balance
+    print('balance: %s' % balance)
     # 例：1004表示4位字母数字，不同类型收费不同。请准确填写，否则影响识别率。在此查询所有类型 http://www.yundama.com/price.html
     codetype = 1000
     timeout = 60
     # 开始识别，图片路径，验证码类型ID，超时时间（秒），识别结果
     cid, result = yundama.decode(filename, codetype, timeout)
-    print 'cid: %s, result: %s' % (cid, result)
+    print('cid: %s, result: %s' % (cid, result))
     return result, balance
 
 

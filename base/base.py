@@ -2,6 +2,7 @@
 import os
 import sys
 import time
+
 try:
     from ConfigParser import ConfigParser
 except ImportError:
@@ -17,15 +18,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
 # 转化exe有问题
 # from user_agent import generate_user_agent
-from agents import AGENTS_ALL
 from random import choice
 from PIL import Image
+
 try:
     from Queue import Queue
 except ImportError:
     from queue import Queue
 import datetime
 import requests
+from base.yundama import recognize_by_http
+from base.agents import AGENTS_ALL
 
 #######################
 
@@ -71,14 +74,15 @@ def debug(info):
 
 
 def encode_info(content):
-    try:
-        if 'utf' in sys.stdout.encoding.lower():
-            return content.encode('utf-8')
-        else:
-            return content.encode('gbk')
-    except Exception as e:
-        logging.error(e)
-        return content.encode('utf-8')
+    # try:
+    #     if 'utf' in sys.stdout.encoding.lower():
+    #         return content.encode('utf-8')
+    #     else:
+    #         return content.encode('gbk')
+    # except Exception as e:
+    #     logging.error(e)
+    #     return content.encode('utf-8')
+    return content
 
 
 def raise_error(e, et=None):
@@ -96,7 +100,7 @@ class BasePhantomjs(object):
     def __init__(self, configpath='config.ini'):
         assert os.path.exists(configpath), u'配置文件config.ini不存在'
         self.cf = ConfigParser()
-        self.cf.read(configpath)
+        self.cf.read(configpath, encoding='utf8')
 
         self.url_login = ''
         self.interval_time = self.cf.getint('main', 'interval_time')
@@ -135,7 +139,6 @@ class BasePhantomjs(object):
         return chaptcha_code
 
     def yundama(self, captcha_filename=None):  # 云打码
-        from yundama import recognize_by_http
         debug(encode_info(u'验证码地址: %r' % captcha_filename))
         debug(encode_info(u'验证码是否存在: %r' % os.path.exists(captcha_filename)))
 
@@ -339,9 +342,9 @@ class BasePhantomjs(object):
         '''
         读取预设的账号密码等数据
         '''
-        debug(encode_info(u'开始读取账号列表: %r' % self.inputputfilename))
+        debug('开始读取账号列表: %r' % self.inputputfilename)
         if not os.path.exists(self.inputputfilename):
-            raise Exception(encode_info(u'文件不存在'))
+            raise Exception(u'文件不存在')
         lines = bom_read(self.inputputfilename)
         last_username_password = None
         for line in lines:
@@ -356,15 +359,15 @@ class BasePhantomjs(object):
                 if last_username_password:
                     self.preset_data[last_username_password].put(line)
                 else:
-                    raise_error(encode_info(u'账号密码书写格式错误: %r' % line))
+                    raise_error(u'账号密码书写格式错误: %r' % line)
             else:
-                raise_error(encode_info(u'账号密码书写格式错误: %r' % line))
+                raise_error(u'账号密码书写格式错误: %r' % line)
 
         logging.debug(self.preset_data)
 
     def raise_error_count(self, key, queue=None, reset=False):
         if reset:
-            debug(encode_info(u'重新计数，放回队列'))
+            debug(u'重新计数，放回队列')
             self.error_count[key] = 0
             if queue is None:
                 self.upq.put(key)
@@ -374,10 +377,10 @@ class BasePhantomjs(object):
             count = self.error_count.get(key, 0)
             if count > self.max_error_count:
                 line = u'{}: 超过重试次数'.format(key)
-                debug(encode_info(line))
+                debug(line)
                 self.write_oneline(line)
             else:
-                debug(encode_info(u'放回任务队列: {}'.format(key)))
+                debug(u'放回任务队列: {}'.format(key))
                 self.error_count[key] += 1
                 if queue is None:
                     self.upq.put(key)

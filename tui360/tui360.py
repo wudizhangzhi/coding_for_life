@@ -95,6 +95,7 @@ class Tui360(BasePhantomjs):
             return False
 
     def run(self):
+        self.printinfo()
         # 读取预设
         self.read_preset_data()
         while not self.upq.empty():
@@ -114,6 +115,17 @@ class Tui360(BasePhantomjs):
                 self.raise_error_count(username_password, self.upq)
 
         debug(encode_info(u'{:=^20}'.format(u'结束')))
+
+    def printinfo(self):
+        content = '''
+            预设文件格式: {input}
+            用户名{separator}密码
+            用户名{separator}密码
+            用户名{separator}密码
+            用户名{separator}密码
+        '''.format(separator=self.cf.get('main', 'separator'),
+                   input=self.cf.get('main', 'input'))
+        print(content)
 
 
 if __name__ == '__main__':
