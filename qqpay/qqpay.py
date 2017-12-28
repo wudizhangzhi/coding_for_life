@@ -1,0 +1,18 @@
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver import DesiredCapabilities
+import requests
+
+
+def test():
+    captcha_host = 'https://ssl.captcha.qq.com'
+    img_src = '/cap_union_new_getcapbysig?aid=11000101&asig=&captype=&protocol=https&clientype=2&disturblevel=&apptype=2&curenv=inner&ua=TW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTJfNikgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzYzLjAuMzIzOS44NCBTYWZhcmkvNTM3LjM2&sess=Y_7QXmMLYX-WwBM5UDOUaI3B8LAHXFl9ZgJBAlpGUVbNhHzoaC3XH1I4g5ehveoU11WryRCFwlk-MH5cF5DX6jVnOOE5882p1TZutMxoCIEpuPw4K3PljEJq_38EW6i5HL9bJ1G2ODe81e3oDuakgTEQEfvGlbSz2ZqN2pTC7janyvioDDe1yKY-rGa9yLERYlbEoUF78Aw*&theme=&noBorder=noborder&fb=1&showtype=embed&uid=2634107307&cap_cd=e47nVG9E4yIIJAxgpNW0p4hNC2bSdvtWDhKYGSVS-9tI02agv4MEPw**&lang=2052&rnd=517436&rand=0.38466088829802203&vsig=c01nvV5FE7Sq-SzTid6ZVngNltf91_7K2B4yY5kvDo5KKmna46LmcYzouENZsgq2IQg4af0ISk_vLi2RXELlCFv2B1WPiIFgdETaWAJ_Q-CWj_KM9xT6EonMkTDdzxdFY3AbjpPBww_idavFcbidIs-btMNIP8TZet2TqDl37siQrvx4OTWxlaLdQ**&img_index=2'
+
+    img_whole_src = '/cap_union_new_getcapbysig?aid=11000101&asig=&captype=&protocol=https&clientype=2&disturblevel=&apptype=2&curenv=inner&ua=TW96aWxsYS81LjAgKE1hY2ludG9zaDsgSW50ZWwgTWFjIE9TIFggMTBfMTJfNikgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzYzLjAuMzIzOS44NCBTYWZhcmkvNTM3LjM2&sess=Y_7QXmMLYX-WwBM5UDOUaI3B8LAHXFl9ZgJBAlpGUVbNhHzoaC3XH1I4g5ehveoU11WryRCFwlk-MH5cF5DX6jVnOOE5882p1TZutMxoCIEpuPw4K3PljEJq_38EW6i5HL9bJ1G2ODe81e3oDuakgTEQEfvGlbSz2ZqN2pTC7janyvioDDe1yKY-rGa9yLERYlbEoUF78Aw*&theme=&noBorder=noborder&fb=1&showtype=embed&uid=2634107307&cap_cd=e47nVG9E4yIIJAxgpNW0p4hNC2bSdvtWDhKYGSVS-9tI02agv4MEPw**&lang=2052&rnd=517436&rand=0.38466088829802203&vsig=c01nvV5FE7Sq-SzTid6ZVngNltf91_7K2B4yY5kvDo5KKmna46LmcYzouENZsgq2IQg4af0ISk_vLi2RXELlCFv2B1WPiIFgdETaWAJ_Q-CWj_KM9xT6EonMkTDdzxdFY3AbjpPBww_idavFcbidIs-btMNIP8TZet2TqDl37siQrvx4OTWxlaLdQ**&img_index=1'
+
+
+if __name__ == "__main__":
+    test()
