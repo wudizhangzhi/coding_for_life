@@ -3,7 +3,7 @@ import sys
 sys.path.append("..")
 import os
 from lxml import etree
-
+import re
 import requests
 from lxml import etree
 import json
@@ -71,7 +71,7 @@ class Jcard(BasePhantomjs):
         self.url_login = 'http://www.jcard.cn/Bill/TradeSearch.aspx'
         self.rule = RULE
         self.use_proxy = False
-        self.max_error_count = self.cf.get('main', 'max_error_count')
+        self.max_error_count = self.cf.getint('main', 'max_error_count')
         self.THREAD_NUM = self.cf.getint('main', 'thread_num')
 
     def read_preset_data(self):
@@ -110,6 +110,26 @@ class Jcard(BasePhantomjs):
         useable = useable[0] if useable else ''
         return status, times, parvalue, lock, useable
 
+    def _add_to_while(self, ip):
+        try:
+            r = requests.get(self.cf.get('proxy', 'white_url') + ip, timeout=10)
+            if r.json()['code'] == 0:
+                debug('保存白名单成功: {}'.format(ip))
+            else:
+                debug(r.text)
+        except Exception as e:
+            print(e)
+
+    def _get_proxy_balance(self):
+        try:
+            r = requests.get(self.cf.get('proxy', 'balance_url'), timeout=10)
+            if r.json()['code'] == 0:
+                debug('账户余额: {}'.format(r.json()['data']['balance']))
+            else:
+                debug(r.text)
+        except Exception as e:
+            print(e)
+
     def _fetch_proxy(self):
         '''
         获取代理ip
@@ -119,23 +139,35 @@ class Jcard(BasePhantomjs):
         j = r.json()
         if not j['code'] == 0:
             debug(r.text)
+            if j['code'] == 113:
+                match = re.findall(r'\d+\.\d+\.\d+\.\d+', j['msg'])
+                if match:
+                    self._add_to_while(match[0])
             return None
         else:
             ip_port = ':'.join((j['data'][0]['ip'], str(j['data'][0]['port'])))
             expire_time = j['data'][0].get('expire_time',
                                            (datetime.datetime.now() + datetime.timedelta(minutes=10)).strftime(
                                                '%Y-%m-%d %H:%M:%S'))
+            self._get_proxy_balance()
             return ip_port, expire_time
 
     def start_search(self):
+        use_proxy = False
+        _proxy = None
+        _expire_time = None
+
         while not self.upq.empty():
             username_password = self.upq.get_nowait()
             is_success = False
+            need_change_id = False  # 是否需要换ip
             try:
                 tmp = username_password.split(self.separator)
                 username = tmp[0]
                 password = tmp[1]
-                driver = self.login(username, password)
+                if use_proxy:
+                    _proxy, _expire_time = self._get_proxy()
+                driver = self.login(username, password, proxy=_proxy)
                 if driver:
                     html = driver.page_source
                     if u'alert' in html:
@@ -144,12 +176,14 @@ class Jcard(BasePhantomjs):
                         errormsg = u''.join(errormsgs).replace("alert('", '').replace("')", '')
                         debug(encode_info(errormsg))
                         if u'您的查询次数太频繁' in html:
-                            self.use_proxy = True
+                            use_proxy = True
+                            need_change_id = True
                         raise MaxIPException()
                     # 登录成功会显示的
                     display_name = driver.find_elements(By.ID, 'ctl00_MainContent_divUCardSearchResult')
                     if len(display_name) > 0:
                         debug(encode_info(u'登录成功'))
+                        # 放回proxy
                         try:
                             driver.quit()
                         except:
@@ -169,10 +203,11 @@ class Jcard(BasePhantomjs):
                     raise_error(encode_info(u'登录失败: {}'.format(username)))
             except (MaxIPException, TimeoutException) as e:
                 # TODO 更换ip，重试
+                need_change_id = True
                 debug(str(e))
                 # 增加ip计数
-                if self.proxy:
-                    self.error_proxy[self.proxy] += 1
+                if use_proxy:
+                    self.error_proxy[_proxy] += 1
                 self.raise_error_count(username_password, self.upq, reset=True)
             except CaptchaException as e:
                 debug(str(e))
@@ -185,6 +220,13 @@ class Jcard(BasePhantomjs):
                 else:
                     debug(encode_info(u'获取失败: {}'.format(username_password)))
                     self.raise_error_count(username_password, self.upq)
+
+            if not need_change_id and _proxy and _expire_time:
+                debug('放回ip: {} {}'.format(_proxy, _expire_time))
+                self.proxy_pool.put((_proxy, _expire_time))
+            elif _proxy and _expire_time:
+                debug('丢弃ip: {} {}'.format(_proxy, _expire_time))
+
             debug(encode_info(u'---' * 20))
 
     def run(self):

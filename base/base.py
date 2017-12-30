@@ -1,5 +1,6 @@
 # coding=utf8
 import os
+import re
 import sys
 import time
 
@@ -18,7 +19,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
 # 转化exe有问题
 # from user_agent import generate_user_agent
-from random import choice
+from random import choice, random, randint
 from PIL import Image
 
 try:
@@ -124,9 +125,10 @@ class BasePhantomjs(object):
         self.use_proxy = False
         # TODO improve
         self.error_proxy = defaultdict(int)
-        self.proxy = None
-        self.proxy_pool = []
-        self.max_error_count = 5
+        # self.proxy = None
+        self.proxy_pool = Queue()
+        self.max_error_count = self.cf.getint('main', 'max_error_count')
+        self.timeout = 10
 
     @staticmethod
     def recognize_captcha_by_yourself(captcha_filename):
@@ -161,7 +163,7 @@ class BasePhantomjs(object):
         else:
             return By.NAME
 
-    def init_driver(self):
+    def init_driver(self, proxy=None):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
         # dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
@@ -175,11 +177,10 @@ class BasePhantomjs(object):
         except Exception as e:
             phantomjs_driver_path = 'phantomjs'
             debug(e)
-        if self.use_proxy:
-            self.proxy = self._get_proxy()
-            debug(encode_info(u'使用代理IP: {}'.format(self.proxy)))
+        if proxy:
+            debug(encode_info(u'使用代理IP: {}'.format(proxy)))
             service_args = [
-                '--proxy={proxy}'.format(proxy=self.proxy),
+                '--proxy={proxy}'.format(proxy=proxy),
                 '--proxy-type=http',
             ]
         else:
@@ -194,9 +195,9 @@ class BasePhantomjs(object):
         driver.implicitly_wait(5)
         return driver
 
-    def login(self, username, password):
+    def login(self, username, password, proxy=None):
         debug(encode_info(u'开始登录: {u}'.format(u=username)))
-        driver = self.init_driver()
+        driver = self.init_driver(proxy=proxy)
         try:
             driver.set_page_load_timeout(60)
             # driver.maximize_window()
@@ -315,13 +316,13 @@ class BasePhantomjs(object):
             raise e
 
         except TimeoutException as e:
-            if self.use_proxy:
+            if proxy:
                 if isinstance(e, TimeoutException):
                     # 代理ip增加错误一次
-                    if self.error_proxy[self.proxy] > 3:
-                        self._delete_proxy(self.proxy)
+                    if self.error_proxy[proxy] > 3:
+                        self._delete_proxy(proxy)
                     else:
-                        self.error_proxy[self.proxy] += 1
+                        self.error_proxy[proxy] += 1
             raise e
 
         except Exception as e:
@@ -394,23 +395,61 @@ class BasePhantomjs(object):
         '''
         debug(encode_info(u'开始获取代理ip'))
         now = datetime.datetime.now()
-        if len(self.proxy_pool) > 0:
-            ip, expire_time = self.proxy_pool.pop(0)
+        if not self.proxy_pool.empty():
+            ip, expire_time = self.proxy_pool.get_nowait()
             if self.error_proxy.get(ip, 0) < 4:
                 if now < datetime.datetime.strptime(expire_time, '%Y-%m-%d %H:%M:%S'):
-                    debug(encode_info(u'使用库存ip: {}'.format(ip)))
-                    return ip
+                    debug(encode_info(u'使用库存ip: {}, 剩余数量: {}'.format(ip, self.proxy_pool.qsize())))
+                    return ip, expire_time
         debug(encode_info(u'调用接口，获取新ip'))
         proxy, expire_time = self._fetch_proxy()
-        self.proxy_pool.append((proxy, expire_time))
-        return proxy
-
-    def _fetch_proxy(self):
-        '''
-        利用接口获取ip，待继承
-        :return:  proxy, expire_time
-        '''
-        pass
+        self.proxy_pool.put((proxy, expire_time))
+        return proxy, expire_time
 
     def _delete_proxy(self, proxy):
         pass
+
+    def _add_to_while(self, ip):
+        try:
+            r = requests.get(self.cf.get('proxy', 'white_url') + ip, timeout=10)
+            if r.json()['code'] == 0:
+                debug('保存白名单成功: {}'.format(ip))
+            else:
+                debug(r.text)
+        except Exception as e:
+            print(e)
+
+    def _get_proxy_balance(self):
+        try:
+            time.sleep(2)
+            r = requests.get(self.cf.get('proxy', 'balance_url'), timeout=10)
+            if r.json()['code'] == 0:
+                debug('账户余额: {}'.format(r.json()['data']['balance']))
+            else:
+                debug(r.text)
+        except Exception as e:
+            print(e)
+
+    def _fetch_proxy(self):
+        '''
+        获取代理ip
+        :return: str: ip:port
+        '''
+        r = requests.get(self.cf.get('proxy', 'url'), timeout=10)
+        j = r.json()
+        print(j)
+        if not j['code'] == 0:
+            debug(r.text)
+            if j['code'] == 113:
+                match = re.findall(r'\d+\.\d+\.\d+\.\d+', j['msg'])
+                if match:
+                    self._add_to_while(match[0])
+                    return self._fetch_proxy()
+            raise Exception('获取代理ip失败')
+        else:
+            ip_port = ':'.join((j['data'][0]['ip'], str(j['data'][0]['port'])))
+            expire_time = j['data'][0].get('expire_time',
+                                           (datetime.datetime.now() + datetime.timedelta(minutes=10)).strftime(
+                                               '%Y-%m-%d %H:%M:%S'))
+            self._get_proxy_balance()
+            return ip_port, expire_time
