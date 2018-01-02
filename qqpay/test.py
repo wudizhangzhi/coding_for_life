@@ -174,7 +174,7 @@ def drag(driver):
     action.reset_actions()
 
 
-def test():
+def test(username, password):
     dcap = dict(DesiredCapabilities.PHANTOMJS)
     # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
     # dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
@@ -277,5 +277,5 @@ def get_track(distance):
     return track
 
 if __name__ == '__main__':
-    test()
+    test(username='', password='')
     time.sleep(100)

@@ -1,3 +1,4 @@
+import json
 import re
 import sys
 
@@ -94,17 +95,20 @@ def read_mouse_trace(filename):
     x_pos = y_pos = 0
     is_first = True
     for line in lines:
-        if 'Delay' in line:  # delay
+       if not line.strip():
+            continue 
+       elif 'Delay' in line:  # delay
             match = re.findall(r'([\d\.]+)', line)
             delay = match[0]
             if xoffset and yoffset:
                 result.append((int(xoffset) - x_pos, int(yoffset) - y_pos, float(delay)))
         else:  # move
             match = re.findall(r'(\d+)', line)
-            xoffset, yoffset = match
-            if is_first:
-                x_pos, y_pos = int(xoffset), int(yoffset)
-                is_first = False
+            if match:
+                xoffset, yoffset = match
+                if is_first:
+                    x_pos, y_pos = int(xoffset), int(yoffset)
+                    is_first = False
 
     return result
 
@@ -176,12 +180,37 @@ class QQPay(BasePhantomjs):
     def __init__(self):
         super(QQPay, self).__init__()
         self.rule = RULE
-        self.use_proxy = True if self.cf.get('proxy', 'url') else False
+        try:
+            use_proxy = True if self.cf.get('proxy', 'url') else False
+        except:
+            use_proxy = False
+        self.use_proxy = use_proxy
         self.url_login = 'https://pay.qq.com/'
+        self.separator = self.cf.get('main', 'separator')
         self.HOST = 'https://ssl.captcha.qq.com'
         self.cookies_history = {}  # 保存的cookie历史
 
+    def read_preset_data(self):
+        '''
+        读取预设的账号密码等数据
+        '''
+        debug('开始读取账号列表: %r' % self.inputputfilename)
+        if not os.path.exists(self.inputputfilename):
+            raise Exception(u'文件不存在')
+        lines = bom_read(self.inputputfilename)
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            if self.separator in line:  # QQ号, 密码
+                self.upq.put(line)
+            else:
+                raise_error(u'账号密码书写格式错误: %r' % line)
+
+        logging.debug(self.preset_data)
+
     def run(self):
+        self._read_cookies()
         # TODO
         self.read_preset_data()
 
@@ -196,12 +225,13 @@ class QQPay(BasePhantomjs):
                 self.search_by_one_account(username_password, proxy=proxy)
             except CaptchaException as e:
                 # TODO 验证码问题
-                pass
+                print(e)
             except TimeoutException as e:
                 # 代理ip的问题
-                pass
+                print(e)
 
             except Exception as e:
+                print(e)
                 # TODO
                 self.raise_error_count(username_password)
 
@@ -218,7 +248,7 @@ class QQPay(BasePhantomjs):
 
         user_cookies = self.cookies_history.get(username, None)
         login_success = False
-        if not user_cookies:
+        if not user_cookies or self.is_cookies_expired(user_cookies):
             driver = self.login(username, password, proxy=proxy)
             if not driver:
                 raise Exception('登录失败')
@@ -461,9 +491,9 @@ class QQPay(BasePhantomjs):
         tracks = get_track(distance)
         print(sum(tracks))
         for x in tracks:
-            action.move_by_offset(xoffset=x, yoffset=0).perform()
+            action.move_by_offset(xoffset=x, yoffset=randint(-1, 1)).perform()
             action.reset_actions()
-            time.sleep(0.1)
+            # time.sleep(0.1)
 
         action.release().perform()
         action.reset_actions()
@@ -533,7 +563,7 @@ class QQPay(BasePhantomjs):
             # print(''.join(login_error_tips + captcha_error_tips))
             return False
 
-    # TODO delete
+    # TODO delete for test
     def init_driver(self, proxy=None):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
@@ -627,13 +657,29 @@ class QQPay(BasePhantomjs):
     def _save_cookies(self, username, cookies):
         debug('保存cookies: {}'.format(username))
         self.cookies_history[username] = cookies
+        # TODO 写入文件
+        with open(self.cf.get('main', 'cookie_file'), 'w') as f:
+            f.write(json.dumps(self.cookies_history))
+
+    def _read_cookies(self):
+        try:
+            debug('读取cookie文件')
+            with open(self.cf.get('main', 'cookie_file'), 'r') as f:
+                self.cookies_history = json.loads(f.read())
+        except Exception as e:
+            debug('读取cookie文件失败')
+            debug(e)
+
+    @staticmethod
+    def is_cookies_expired(user_cookies):
+        debug('判断cookie是否过期')
+        return int(time.time()) > min([ck['expiry'] for ck in user_cookies if 'expiry' in ck])
 
 
 if __name__ == "__main__":
     # top = 25
     # result = find_most_dark_part('test.jpeg', 105, 105)
     # print(result)
-    # username_password = '1284302736----4375174767'
     qqpay = QQPay()
     # ip_port = '121.61.81.205:7671'
     success = False
@@ -649,6 +695,7 @@ if __name__ == "__main__":
     #         print(e)
     # ip_port, expire_time = qqpay._fetch_proxy()
     # print(ip_port, expire_time)
-    qqpay.search_by_one_account(username_password, proxy=None)
+    # qqpay.search_by_one_account(username_password, proxy=None)
 
     # print(read_mouse_trace('mouse_trace.rms'))
+    qqpay.run()

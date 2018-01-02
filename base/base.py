@@ -416,6 +416,7 @@ class BasePhantomjs(object):
                 debug('保存白名单成功: {}'.format(ip))
             else:
                 debug(r.text)
+            time.sleep(2)
         except Exception as e:
             print(e)
 
@@ -437,7 +438,6 @@ class BasePhantomjs(object):
         '''
         r = requests.get(self.cf.get('proxy', 'url'), timeout=10)
         j = r.json()
-        print(j)
         if not j['code'] == 0:
             debug(r.text)
             if j['code'] == 113:
