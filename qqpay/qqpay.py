@@ -1,11 +1,9 @@
 import re
 import sys
-from lxml import etree
-
-from selenium.webdriver.common.keys import Keys
 
 sys.path.append("..")
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -16,6 +14,7 @@ import requests
 from PIL import Image, ImageChops
 import numpy as np
 from functools import reduce
+from lxml import etree
 
 from base.base import *
 
@@ -87,6 +86,71 @@ def find_most_dark_part(img, w=0, h=0, top=None, resize=None):
     return max_dark_img
 
 
+def read_mouse_trace(filename):
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+    result = []
+    xoffset = yoffset = None
+    x_pos = y_pos = 0
+    is_first = True
+    for line in lines:
+        if 'Delay' in line:  # delay
+            match = re.findall(r'([\d\.]+)', line)
+            delay = match[0]
+            if xoffset and yoffset:
+                result.append((int(xoffset) - x_pos, int(yoffset) - y_pos, float(delay)))
+        else:  # move
+            match = re.findall(r'(\d+)', line)
+            xoffset, yoffset = match
+            if is_first:
+                x_pos, y_pos = int(xoffset), int(yoffset)
+                is_first = False
+
+    return result
+
+
+def scale_trace(distance, trace_old):
+    pass
+
+
+def get_track(distance):
+    """
+    根据偏移量获取移动轨迹
+    :param distance: 偏移量
+    :return: 移动轨迹
+    """
+    # 移动轨迹
+    track = []
+    # 当前位移
+    current = 0
+    # 减速阈值
+    mid = distance * 4 / 5
+    # 计算间隔
+    t = 0.2
+    # 初速度
+    v = 0
+
+    while current < distance:
+        if current < mid:
+            # 加速度为正2
+            a = 2
+        else:
+            # 加速度为负3
+            a = -3
+        # 初速度v0
+        v0 = v
+        # 当前速度v = v0 + at
+        v = v0 + a * t
+        # 移动距离x = v0t + 1/2 * a * t^2
+        move = v0 * t + 1 / 2 * a * t * t
+        # 当前位移
+        current += move
+        track.append(round(move))
+    if current != distance:
+        track.append(round(distance - current))
+    return track
+
+
 RULE = {
     'startlogin': {'type': BY_ID, 'name': 'login'},
     'login_frame': {'type': BY_ID, 'name': 'login_frame'},
@@ -141,7 +205,6 @@ class QQPay(BasePhantomjs):
                 # TODO
                 self.raise_error_count(username_password)
 
-
     def search_by_one_account(self, username_password, proxy=None):
         separator = self.cf.get('main', 'separator')
 
@@ -162,7 +225,6 @@ class QQPay(BasePhantomjs):
 
             if self.is_need_scroll_capthca(driver):
                 driver = self.scroll_capthca(driver)
-
 
             # 验证登录是否成功
             login_success = self.is_login_success(driver)
@@ -219,7 +281,10 @@ class QQPay(BasePhantomjs):
         input_password.click()
         input_password.clear()
         input_password.send_keys(Keys.HOME)
-        input_password.send_keys(password)
+        # input_password.send_keys(password)
+        for k in list(password):
+            input_password.send_keys(k)
+            time.sleep(0.2)
         time.sleep(self.interval_time)
         print('结果: {}'.format(input_password.get_attribute('value')))
         driver.save_screenshot('输入完数据.png')
@@ -233,12 +298,17 @@ class QQPay(BasePhantomjs):
         return driver
 
     def is_need_scroll_capthca(self, driver):
+        has_captcha = False
         # 判断验证码是否存在，也可以根据newVcodeIframe 下是否存在iframe判断
-        captcha = driver.find_element(self.get_by(self.rule['captcha']['type']),
-                                      self.rule['captcha']['name'])
-        captcha_style = captcha.get_attribute('style')
-        logging.debug('captcha_style: {}'.format(captcha_style))
-        if captcha_style:  # 有验证码
+        captcha = driver.find_elements(self.get_by(self.rule['captcha']['type']),
+                                       self.rule['captcha']['name'])
+        if captcha:
+            captcha = captcha[0]
+            captcha_style = captcha.get_attribute('style')
+            logging.debug('captcha_style: {}'.format(captcha_style))
+            if captcha_style:  # 有验证码
+                has_captcha = True
+        if has_captcha:
             debug('需要验证码')
             return True
         else:
@@ -334,19 +404,76 @@ class QQPay(BasePhantomjs):
                                                    self.rule['tcaptcha_drag_button']['name'])
         location = tcaptcha_drag_button.location
         action = ActionChains(driver)
+        # TODO delete 拖拽前挪动鼠标
+        for _ in range(10):
+            action.move_by_offset(random(), random()).perform()
+            action.reset_actions()
+            time.sleep(random())
+
         action.move_to_element(tcaptcha_drag_button)
-        action.click_and_hold(tcaptcha_drag_button)
+        action.click_and_hold(tcaptcha_drag_button).perform()
+        action.reset_actions()
         if distance < 0:
             debug('拖拽距离为负数, 重新随机赋值')
             distance = randint(50, 200)
-        action.move_by_offset(distance, 0).pause(1).release()
-        action.perform()
+        # TODO 尝试多重拖动,更像人为
+        ########## 1.方案1
+        # distance_left = distance
+        # n = 100
+        # for _ in range(n):
+        #     _offset = random()
+        #     print('移动: {}'.format(_offset))
+        #     distance_left -= _offset
+        #     direction = 1 if random() < 0.5 else -1
+        #     action.move_by_offset(_offset, random() * direction).pause(random()).perform()
+        # action.move_by_offset(distance_left, 0).pause(1).release()
+        ########### 2.方案2 根据录制的轨迹
+        # moves = read_mouse_trace('mouse_trace.rms')
+        # last_one = False
+        # for _m in iter(moves):
+        #     x, y, delay = _m
+        #     if distance - x > 0:
+        #         move_to_right = x
+        #         distance -= x
+        #     else:
+        #         move_to_right = distance
+        #         last_one = True
+        #     action.move_by_offset(move_to_right, y).perform()
+        #     time.sleep(delay)
+        #     debug('移动: {} {} delay: {}'.format(move_to_right, y, delay))
+        #     action.reset_actions()
+        #     if last_one:
+        #         break
+        ########### 3.方案3 缩放录制的轨迹
+        # moves = read_mouse_trace('mouse_trace.rms')
+        # total_move = moves[-1][0]
+        # ratio = float(distance) / total_move
+        # last_x = last_y = 0
+        # for _m in iter(moves):
+        #     x, y, delay = _m
+        #     _x, _y, delay = (x - last_x) * ratio, (y - last_y) * ratio, delay * ratio
+        #     last_x, last_y = x, y
+        #     action.move_by_offset(_x, _y).perform()
+        #     time.sleep(delay)
+        #     debug('移动: {} {} delay: {}'.format(_x, _y, delay))
+        #     action.reset_actions()
+        ########## 4.方案4 先加速后减速
+        tracks = get_track(distance)
+        print(sum(tracks))
+        for x in tracks:
+            action.move_by_offset(xoffset=x, yoffset=0).perform()
+            action.reset_actions()
+            time.sleep(0.1)
+
+        action.release().perform()
+        action.reset_actions()
+        # action.perform()
         # 验证码提示
-        tcaptcha_note = driver.find_elements(self.get_by(BY_CLASS), 'tcaptcha-title')
-        if len(tcaptcha_note) > 0:
-            tcaptcha_note = tcaptcha_note[0]
-            debug('验证码提示: {}'.format(tcaptcha_note.text))
-            # TODO 验证码失败
+        # tcaptcha_note = driver.find_elements(self.get_by(BY_CLASS), 'tcaptcha-title')
+        # if len(tcaptcha_note) > 0:
+        #     tcaptcha_note = tcaptcha_note[0]
+        #     debug('验证码提示: {}'.format(tcaptcha_note.text))
+        #     # TODO 验证码失败
         time.sleep(self.interval_time)
         debug(u'完成拖拽')
         return driver
@@ -506,6 +633,7 @@ if __name__ == "__main__":
     # top = 25
     # result = find_most_dark_part('test.jpeg', 105, 105)
     # print(result)
+    # username_password = '1284302736----4375174767'
     qqpay = QQPay()
     # ip_port = '121.61.81.205:7671'
     success = False
@@ -519,5 +647,8 @@ if __name__ == "__main__":
     #         success = True
     #     except Exception as e:
     #         print(e)
+    # ip_port, expire_time = qqpay._fetch_proxy()
+    # print(ip_port, expire_time)
     qqpay.search_by_one_account(username_password, proxy=None)
 
+    # print(read_mouse_trace('mouse_trace.rms'))
