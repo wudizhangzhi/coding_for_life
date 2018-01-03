@@ -26,6 +26,7 @@ from selenium.webdriver import DesiredCapabilities
 from base.agents import AGENTS_ALL
 import random
 import numpy as np
+from user_agent import generate_user_agent
 
 
 def find_most_dark_part(img, w=0, h=0, top=None, resize=None):
@@ -85,14 +86,15 @@ def drag(driver):
     # slidebkg_style = slidebkg.get_attribute('style')
 
     # slideblock_imgpath = 'tmp/slideblock_src.png'
-    slidebkg_imgpath = 'tmp/slidebkg.jpeg'
+    slidebkg_imgpath = 'tmp/slidebkg.png'
 
     # 下载图片
     if not os.path.exists('tmp'):
         os.mkdir('tmp')
     sess = requests.Session()
     headers = {
-        'User-Agent': choice(AGENTS_ALL),
+        # 'User-Agent': choice(AGENTS_ALL),
+        'User-Agent': generate_user_agent(os=('mac', 'linux')),
     }
     sess.headers = headers
     # r = sess.get(self.HOST + slideblock_src, timeout=self.timeout)
@@ -121,6 +123,7 @@ def drag(driver):
         resize = (int(match[0][0]), int(match[0][1]))
     else:
         resize = None
+
     dark_left, dark_top = find_most_dark_part(slidebkg_imgpath, 55, 55, top=top, resize=resize)
 
     distance = dark_left - left  # 需要移动的距离
@@ -131,10 +134,10 @@ def drag(driver):
     location = tcaptcha_drag_button.location
     action = ActionChains(driver)
     # TODO delete 拖拽前挪动鼠标
-    for _ in range(10):
-        action.move_by_offset(random.random(), random.random()).perform()
-        action.reset_actions()
-        time.sleep(random.random())
+    # for _ in range(10):
+    #     action.move_by_offset(random.random(), random.random()).perform()
+    #     action.reset_actions()
+    #     time.sleep(random.random())
 
     action.move_to_element(tcaptcha_drag_button)
     action.click_and_hold(tcaptcha_drag_button).perform()
@@ -148,27 +151,27 @@ def drag(driver):
     # action.release().perform()
     # time.sleep(2)
 
-
     action.move_to_element(tcaptcha_drag_button)
     action.click_and_hold(tcaptcha_drag_button).perform()
     action.reset_actions()
     ########### 3.方案3 缩放录制的轨迹
-    # moves = read_mouse_trace('drag.rms')
-    # total_move = moves[-1][0]
-    # ratio = float(distance) / total_move
-    # last_x = last_y = 0
-    # for _m in iter(moves):
-    #     x, y, delay = _m
-    #     _x, _y, delay = (x - last_x) * ratio, (y - last_y) * ratio, delay * ratio
-    #     last_x, last_y = x, y
-    #     action.move_by_offset(_x, _y).perform()
-    #     time.sleep(delay)
-    #     action.reset_actions()
-    tracks = get_track(distance)
-    for x in tracks:
-        action.move_by_offset(xoffset=x, yoffset=random.randint(-1, 1)).perform()
+    moves = read_mouse_trace('slow.rms')
+    total_move = moves[-1][0]
+    ratio = float(distance) / total_move
+    last_x = last_y = 0
+    for _m in iter(moves):
+        x, y, delay = _m
+        _x, _y, delay = (x - last_x) * ratio, (y - last_y) * ratio, delay * ratio
+        print(_x, _y, delay)
+        last_x, last_y = x, y
+        action.move_by_offset(_x, _y).perform()
         action.reset_actions()
-        # time.sleep(0.2)
+        # time.sleep(delay)
+    # tracks = get_track(distance)
+    # for x in tracks:
+    #     action.move_by_offset(xoffset=x, yoffset=random.randint(-1, 1)).perform()
+    #     action.reset_actions()
+    #     # time.sleep(0.2)
 
     action.release().perform()
     action.reset_actions()
@@ -205,6 +208,9 @@ def test(username, password):
     btn_login = driver.find_element(By.ID, 'login')
     btn_login.click()
 
+    login_frame = driver.find_element(By.ID, 'login_frame')
+
+
     # 转到登录用iframe
     driver.switch_to.frame(driver.find_element(By.ID, 'login_frame'))
     time.sleep(2)
@@ -233,7 +239,7 @@ def test(username, password):
     # 登录
     input_submit = driver.find_element(By.ID, 'login_button')
     input_submit.click()
-    time.sleep(3)
+    time.sleep(2)
     ##### 检测验证码
     drag(driver)
 
@@ -275,6 +281,7 @@ def get_track(distance):
     # if distance - current != 0:
     #     track.append(distance - current)
     return track
+
 
 if __name__ == '__main__':
     test(username='', password='')

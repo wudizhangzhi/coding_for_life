@@ -87,7 +87,7 @@ def find_most_dark_part(img, w=0, h=0, top=None, resize=None):
     return max_dark_img
 
 
-def read_mouse_trace(filename):
+def read_mouse_trace(filename, distance=None):
     with open(filename, 'r') as f:
         lines = f.readlines()
     result = []
@@ -95,9 +95,9 @@ def read_mouse_trace(filename):
     x_pos = y_pos = 0
     is_first = True
     for line in lines:
-       if not line.strip():
-            continue 
-       elif 'Delay' in line:  # delay
+        if not line.strip():
+            continue
+        elif 'Delay' in line:  # delay
             match = re.findall(r'([\d\.]+)', line)
             delay = match[0]
             if xoffset and yoffset:
@@ -109,7 +109,6 @@ def read_mouse_trace(filename):
                 if is_first:
                     x_pos, y_pos = int(xoffset), int(yoffset)
                     is_first = False
-
     return result
 
 
@@ -153,6 +152,9 @@ def get_track(distance):
     if current != distance:
         track.append(round(distance - current))
     return track
+
+
+class CookieException(Exception): pass
 
 
 RULE = {
@@ -250,16 +252,33 @@ class QQPay(BasePhantomjs):
         login_success = False
         if not user_cookies or self.is_cookies_expired(user_cookies):
             driver = self.login(username, password, proxy=proxy)
+            login_success = False
             if not driver:
                 raise Exception('登录失败')
+            try:
+                if self.is_need_scroll_capthca(driver):
+                    driver = self.scroll_capthca(driver)
 
-            if self.is_need_scroll_capthca(driver):
-                driver = self.scroll_capthca(driver)
-
-            # 验证登录是否成功
-            login_success = self.is_login_success(driver)
-            cookies = driver.get_cookies()
-            driver.quit()
+                # 验证登录是否成功
+                login_success = self.is_login_success(driver)
+                driver.get('https://my.pay.qq.com/account/index.shtml')
+                cookies = driver.get_cookies()
+                # # TODO 是否手动登录
+                if not login_success:
+                    driver.switch_to.default_content()
+                    key = input('等待人工验证')
+                    login_success = self.is_login_success(driver)
+                    # while len(driver.find_elements(self.get_by(self.rule['login_frame']['type']),
+                    #                                self.rule['login_frame']['name'])) > 0:
+                    #     print('等待人工验证')
+                    #     time.sleep(10)
+                else:
+                    time.sleep(100)
+            except Exception as e:
+                raise e
+            finally:
+                # TODO
+                driver.quit()
         else:
             debug('使用保存好的cookie直接登录')
             cookies = user_cookies
@@ -267,7 +286,14 @@ class QQPay(BasePhantomjs):
         if user_cookies or login_success:
             self._save_cookies(username, cookies)
             logging.debug(cookies)
-            self.search_info(cookies)
+            try:
+                self.search_info(cookies, proxy=proxy)
+            except CookieException as e:
+                self.cookies_history.pop(username)
+                raise e
+            except Exception as e:
+                raise e
+
         else:
             raise Exception('验证登录结果: 失败')
 
@@ -446,65 +472,21 @@ class QQPay(BasePhantomjs):
         if distance < 0:
             debug('拖拽距离为负数, 重新随机赋值')
             distance = randint(50, 200)
-        # TODO 尝试多重拖动,更像人为
-        ########## 1.方案1
-        # distance_left = distance
-        # n = 100
-        # for _ in range(n):
-        #     _offset = random()
-        #     print('移动: {}'.format(_offset))
-        #     distance_left -= _offset
-        #     direction = 1 if random() < 0.5 else -1
-        #     action.move_by_offset(_offset, random() * direction).pause(random()).perform()
-        # action.move_by_offset(distance_left, 0).pause(1).release()
-        ########### 2.方案2 根据录制的轨迹
-        # moves = read_mouse_trace('mouse_trace.rms')
-        # last_one = False
-        # for _m in iter(moves):
-        #     x, y, delay = _m
-        #     if distance - x > 0:
-        #         move_to_right = x
-        #         distance -= x
-        #     else:
-        #         move_to_right = distance
-        #         last_one = True
-        #     action.move_by_offset(move_to_right, y).perform()
-        #     time.sleep(delay)
-        #     debug('移动: {} {} delay: {}'.format(move_to_right, y, delay))
-        #     action.reset_actions()
-        #     if last_one:
-        #         break
-        ########### 3.方案3 缩放录制的轨迹
-        # moves = read_mouse_trace('mouse_trace.rms')
-        # total_move = moves[-1][0]
-        # ratio = float(distance) / total_move
-        # last_x = last_y = 0
-        # for _m in iter(moves):
-        #     x, y, delay = _m
-        #     _x, _y, delay = (x - last_x) * ratio, (y - last_y) * ratio, delay * ratio
-        #     last_x, last_y = x, y
-        #     action.move_by_offset(_x, _y).perform()
-        #     time.sleep(delay)
-        #     debug('移动: {} {} delay: {}'.format(_x, _y, delay))
-        #     action.reset_actions()
-        ########## 4.方案4 先加速后减速
-        tracks = get_track(distance)
-        print(sum(tracks))
-        for x in tracks:
-            action.move_by_offset(xoffset=x, yoffset=randint(-1, 1)).perform()
-            action.reset_actions()
-            # time.sleep(0.1)
+
+        self.drag_like_human(action, distance)
 
         action.release().perform()
         action.reset_actions()
         # action.perform()
-        # 验证码提示
-        # tcaptcha_note = driver.find_elements(self.get_by(BY_CLASS), 'tcaptcha-title')
-        # if len(tcaptcha_note) > 0:
-        #     tcaptcha_note = tcaptcha_note[0]
-        #     debug('验证码提示: {}'.format(tcaptcha_note.text))
-        #     # TODO 验证码失败
         time.sleep(self.interval_time)
+        # 检测验证码
+        tcaptcha_drag_button = driver.find_elements(self.get_by(self.rule['tcaptcha_drag_button']['type']),
+                                                    self.rule['tcaptcha_drag_button']['name'])
+        if len(tcaptcha_drag_button) > 0:
+            debug('验证码验证失败')
+            # TODO 是重新验证还是手动
+            raise Exception('滑动验证码验证失败')
+
         debug(u'完成拖拽')
         return driver
 
@@ -597,12 +579,14 @@ class QQPay(BasePhantomjs):
         driver.implicitly_wait(5)
         return driver
 
-    def search_info(self, cookies):
+    def search_info(self, cookies, proxy=None):
         sess = requests.Session()
         sess.cookies.update(dict([(i['name'], i['value']) for i in cookies]))
         sess.headers = {
             'User-Agent': choice(AGENTS_ALL),
         }
+        if proxy:
+            sess.proxies = {'http': proxy}
         self.search_qbbalance(sess)
         # TODO 默认当天
         today = datetime.datetime.today().strftime('%Y-%m-%d')
@@ -624,9 +608,10 @@ class QQPay(BasePhantomjs):
             return qb_balance, qd_balance
         else:
             # TODO
-            print(j)
-            line = 'Q币,Q点, 查询失败'
-            self.write_oneline(line)
+            debug(j)
+            raise CookieException('Q币,Q点, 查询失败')
+            # line = 'Q币,Q点, 查询失败'
+            # self.write_oneline(line)
 
     def search_trade_history(self, sess, start_date, end_date, page=1):
         t = round(random(), 17)
@@ -650,9 +635,10 @@ class QQPay(BasePhantomjs):
                 self.write_oneline(line)
         else:
             # TODO
-            print(j)
-            line = 'Q币,Q点明细查询失败'
-            self.write_oneline(line)
+            debug(j)
+            raise CookieException('Q币,Q点明细查询失败')
+            # line = 'Q币,Q点明细查询失败'
+            # self.write_oneline(line)
 
     def _save_cookies(self, username, cookies):
         debug('保存cookies: {}'.format(username))
@@ -672,8 +658,64 @@ class QQPay(BasePhantomjs):
 
     @staticmethod
     def is_cookies_expired(user_cookies):
-        debug('判断cookie是否过期')
-        return int(time.time()) > min([ck['expiry'] for ck in user_cookies if 'expiry' in ck])
+        is_expired = int(time.time()) > min([ck['expiry'] for ck in user_cookies if 'expiry' in ck])
+        debug('判断cookie是否过期: {}'.format(is_expired))
+        return is_expired
+
+    def drag_like_human(self, action, distance):
+        '''
+        模仿人类的滑动
+        :param action:
+        :param distance:
+        :return:
+        '''
+        # TODO 尝试多重拖动,更像人为
+        ########## 1.方案1
+        # distance_left = distance
+        # n = 100
+        # for _ in range(n):
+        #     _offset = random()
+        #     print('移动: {}'.format(_offset))
+        #     distance_left -= _offset
+        #     direction = 1 if random() < 0.5 else -1
+        #     action.move_by_offset(_offset, random() * direction).pause(random()).perform()
+        # action.move_by_offset(distance_left, 0).pause(1).release()
+        ########### 2.方案2 根据录制的轨迹
+        # moves = read_mouse_trace('mouse_trace.rms')
+        # last_one = False
+        # for _m in iter(moves):
+        #     x, y, delay = _m
+        #     if distance - x > 0:
+        #         move_to_right = x
+        #         distance -= x
+        #     else:
+        #         move_to_right = distance
+        #         last_one = True
+        #     action.move_by_offset(move_to_right, y).perform()
+        #     time.sleep(delay)
+        #     debug('移动: {} {} delay: {}'.format(move_to_right, y, delay))
+        #     action.reset_actions()
+        #     if last_one:
+        #         break
+        ########## 4.方案4 先加速后减速
+        tracks = get_track(distance)
+        for x in tracks:
+            action.move_by_offset(xoffset=x, yoffset=randint(-1, 1)).perform()
+            action.reset_actions()
+            time.sleep(0.1)
+        ########### 3.方案3 缩放录制的轨迹
+        # moves = read_mouse_trace('slow.rms')
+        # total_move = moves[-1][0]
+        # ratio = float(distance) / total_move
+        # last_x = last_y = 0
+        # for _m in iter(moves):
+        #     x, y, delay = _m
+        #     _x, _y, delay = (x - last_x) * ratio, (y - last_y) * ratio, delay * ratio
+        #     # print(_x, _y, delay)
+        #     last_x, last_y = x, y
+        #     action.move_by_offset(_x, _y).perform()
+        #     action.reset_actions()
+        #     time.sleep(delay)
 
 
 if __name__ == "__main__":
