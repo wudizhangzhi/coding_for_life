@@ -113,3 +113,5 @@ ENV/
 *.ini
 *.dll
 *.jpeg
+*.classes.dex
+classes
