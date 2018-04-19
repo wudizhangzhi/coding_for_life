@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os
 import operator
+import traceback
 from vivo import get_balance
 
 from MainWindow import Ui_MainWindow
@@ -61,7 +62,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.textBrowser.append('开始查询: {}, 第{}个'.format(username, count))
             QApplication.processEvents()
             # 开始查询
-            ret = get_balance(username, password)
+            try:
+                ret = get_balance(username, password)
+            except Exception as e:
+                logging.error(traceback.format_exc())
+                # 更新显示
+                self.textBrowser.append('失败: {}'.format(username))
+                self.textBrowser.append(str(e))
+                self.progressBar.setValue(count * 100.0 / self.total)
+                QApplication.processEvents()
+                continue
             balance = ret['balance']
             userTicketBalance = ret['userTicketBalance']
             results.append([username, balance, userTicketBalance])
@@ -69,7 +79,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.textBrowser.append('余额:{}, 礼券余额:{}'.format(balance, userTicketBalance))
             self.progressBar.setValue(count * 100.0 / self.total)
             QApplication.processEvents()
-
+        logging.debug(results)
         self.textBrowser.append('开始导出结果到 output.txt')
         QApplication.processEvents()
         # 导出文件
