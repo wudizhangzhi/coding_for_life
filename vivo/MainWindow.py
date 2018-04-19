@@ -58,8 +58,8 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "输入文件路径:"))
         self.btn_select.setText(_translate("MainWindow", "选择文件"))
         self.plainTextEdit.setPlainText(_translate("MainWindow", "1.输入的账号文件input.txt格式为:\n"
-"      username---password\n"
-"      username---password\n"
+"      username----password\n"
+"      username----password\n"
 "2.目前input.txt的编码使用gbk,在window上不用改默认编码了"))
         self.label_2.setText(_translate("MainWindow", "使用说明:"))
 

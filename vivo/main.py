@@ -58,12 +58,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for line in self.lines:
             count += 1
             line = line.decode('gbk')
-            username, password = line.split('---')
-            self.textBrowser.append('开始查询: {}, 第{}个'.format(username, count))
-            QApplication.processEvents()
-            # 开始查询
+            username, password = line.split('----')
             try:
+                self.textBrowser.append('开始查询: {}, 第{}个'.format(username, count))
+                QApplication.processEvents()
+                # 开始查询
                 ret = get_balance(username, password)
+                if int(ret.get('respCode', 0)) != 200:
+                    self.textBrowser.append('错误: {}'.format(ret))
+                    logging.error(ret)
+                    continue
+                balance = ret['balance'] / 100.0
+                userTicketBalance = ret['userTicketBalance'] / 100.0
+                results.append([username, balance, userTicketBalance])
+                # 更新显示
+                self.textBrowser.append('余额:{}, 礼券余额:{}'.format(balance, userTicketBalance))
+                self.progressBar.setValue(count * 100.0 / self.total)
+                QApplication.processEvents()
             except Exception as e:
                 logging.error(traceback.format_exc())
                 # 更新显示
@@ -72,13 +83,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.progressBar.setValue(count * 100.0 / self.total)
                 QApplication.processEvents()
                 continue
-            balance = ret['balance']
-            userTicketBalance = ret['userTicketBalance']
-            results.append([username, balance, userTicketBalance])
-            # 更新显示
-            self.textBrowser.append('余额:{}, 礼券余额:{}'.format(balance, userTicketBalance))
-            self.progressBar.setValue(count * 100.0 / self.total)
-            QApplication.processEvents()
         logging.debug(results)
         self.textBrowser.append('开始导出结果到 output.txt')
         QApplication.processEvents()

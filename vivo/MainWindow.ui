@@ -97,8 +97,8 @@
     </property>
     <property name="plainText">
      <string>1.输入的账号文件input.txt格式为:
-      username---password
-      username---password
+      username----password
+      username----password
 2.目前input.txt的编码使用gbk,在window上不用改默认编码了</string>
     </property>
    </widget>
