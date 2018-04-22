@@ -82,6 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.textBrowser.append(str(e))
                 self.progressBar.setValue(count * 100.0 / self.total)
                 QApplication.processEvents()
+                results.append([username, '失败', '失败'])
                 continue
         logging.debug(results)
         self.textBrowser.append('开始导出结果到 output.txt')
