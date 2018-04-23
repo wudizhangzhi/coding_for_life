@@ -116,3 +116,5 @@ ENV/
 *.classes.dex
 classes
 *.dex
+*.class
+*.apk
