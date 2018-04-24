@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2018/4/22 下午7:36
 # @Author  : wudizhangzhi
+import datetime
+import json
 import random
 
 import requests
@@ -59,34 +61,75 @@ def get_android_id():
     return hex(int(result, base=2))[2:]
 
 
-def login(username, password):
-    encoding = 'UTF-8'
-    passWord_md5 = md5(password.encode(encoding)).hexdigest()
-    appKey = 'usercenter'
-    appSecret = '9effeac61b7ad92a9bef3da596f2158b'
-    isVerifyCode = 2
-    sign = signMD5(appKey + username + passWord_md5, appSecret, encoding)
-    data = {"appKey": appKey,
+class Oppo(object):
+    def __init__(self):
+        self.session = requests.session()
+
+    def login(self, username, password):
+        encoding = 'UTF-8'
+        passWord_md5 = md5(password.encode(encoding)).hexdigest()
+        appKey = 'usercenter'
+        appSecret = '9effeac61b7ad92a9bef3da596f2158b'
+        isVerifyCode = "2"
+        imei = '008796748083554'
+        sign = signMD5(appKey + username + passWord_md5, appSecret, encoding)
+        user_agent = 'Mozilla/5.0 (Linux; U; Android 4.4.4; zh-cn; MuMu Build/V417IR) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1'
+        ext_system = 'MUMU/4.4.4/0/2/3012/3.3.0/1'
+        # # TODO checkinnerupgrade
+        # url_check = 'http://i2.store.nearme.com.cn/MobileAPI/CheckInnerUpgrade.ashx'
+        # data = '<request version="1"><product_code>3012</product_code><version_code>330</version_code><screen_size>1280#720</screen_size><platform>19</platform><system_type>0</system_type><rom_version>4.4.4</rom_version><model>MuMu</model><brand>Android</brand><rom_type>2</rom_type><language>zhCN</language><checkMd5>e122d99ddac44b3f24d27720f4700d3e</checkMd5><upgrade_module_vers>200</upgrade_module_vers></request>'
+        # headers = {
+        #     'Ext-System': 'MUMU/4.4.4/0/2/3012/3.3.0/1',
+        #     'Ext-User': '-1/{}/0'.format(imei),
+        #     'User-Agent': 'MuMu',
+        #     'Content-Type': 'text/plain; charset=ISO-8859-1',
+        #     'Host': 'i2.store.nearme.com.cn'
+        # }
+        # ret = session.post(url_check, data=data, headers=headers)
+        # print(ret.text)
+        #
+        # # http://cm.poll.keke.cn
+        # url = 'http://cm.poll.keke.cn'
+        # data = b'\n\x1b\x08\x01\x10g\x1a\x13com.oppo.usercenter \x10\x126\n\x0f' + imei.encode('utf8') + b'\x12\x04MuMu\x18\x00"\x13' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S').encode('utf8') + b':\x04WIFIX\x03'
+        # ret = session.post(url, data=data)
+        # print(ret.content)
+
+        # login
+        data = {
+            "appKey": appKey,
             "isVerifyCode": isVerifyCode,
             "loginName": username,
             "passWord": passWord_md5,
+            'sign': sign,
             "verifyCode": "",
-            'sign': sign}
-    print(data)
-    session = requests.session()
-    url = 'http://i.auth.nearme.com.cn/loging'
-    headers = {
-        'Ext-USER': '008796748083554',
-        'Ext-App': '{}/330/com.oppo.usercenter'.format(appSecret),
-        'Ext-System': 'MuMu/4.4.4/2/Netease/4.4.4/0/330/',
-        'User-Agent': 'Dalvik/1.6.0 (Linux; U; Android 4.4.4; MuMu Build/V417IR)',
-        'Host': 'i.auth.nearme.com.cn',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept-Encoding': '',
-    }
-    print(headers)
-    ret = session.post(url, data=data, headers=headers)
-    print(ret.text)
+        }
+        url = 'http://i.auth.nearme.com.cn/loging'
+        headers = {
+            'Ext-USER': imei,
+            'Ext-App': '{}/330/com.oppo.usercenter'.format(appSecret),
+            'Ext-System': 'MuMu/4.4.4/2/Netease/4.4.4/0/330/',
+            'User-Agent': 'Dalvik/1.6.0 (Linux; U; Android 4.4.4; MuMu Build/V417IR)',
+            'Host': 'i.auth.nearme.com.cn',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept-Encoding': '',
+            'Connection': 'Keep-Alive',
+        }
+        ret = self.session.post(url, data=json.dumps(data), headers=headers)
+        print(ret.text)
+        ret_j = ret.json()
+        token = ret_j['token']
+        return token
+
+    def pay(self, token, cardname, cardpwd):
+        # ticket
+        url_ticket = 'https://ticket.keke.cn/tksv/post/pass'
+        data = b':GR0\n' + token.encode('utf8') + b'\x12\x042031\x1a\x13com.oppo.usercenter"\x03ext*\x032.0H2'
+        headers = {
+            'Host': 'ticket.keke.cn',
+            'Accept-Encoding': 'gzip',
+        }
+        ret = self.session.post(url_ticket, verify=False, data=data, headers=headers)
+        print(ret.content)
 
 
 def signMD5(avalue, akey, encoding=None):
@@ -128,7 +171,9 @@ def toHex(input):
 
 
 if __name__ == '__main__':
-    login('17085024908', 'Qq112233')
+    oppo = Oppo()
+    # token = oppo.login('17085024908', 'Qq112233')
+    oppo.pay("TOKEN_c3Pckdf2KppLS1HrpoOAhT5E9J/Zdn6aheggdB5XC0ayXjg6YkMifUMqy+huprqU", '', '')
     # sign = signMD5("usercenter170850249083ce25a66d5b3a8cd661024fea6c79388", "9effeac61b7ad92a9bef3da596f2158b", "UTF-8")
     # print(sign)
     # print(sign == '91905ac6c4af8e68064537da201029aa')
