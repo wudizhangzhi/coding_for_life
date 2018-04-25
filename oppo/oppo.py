@@ -120,10 +120,19 @@ class Oppo(object):
         token = ret_j['token']
         return token
 
-    def pay(self, token, cardname, cardpwd):
+    def pay(self, token, cardname, cardpwd, amount):
+        """
+        支付
+        :param token: 
+        :param cardname: 卡号
+        :param cardpwd: 密码
+        :param amount: 金额
+        :return: 
+        """
         # ticket
         url_ticket = 'https://ticket.keke.cn/tksv/post/pass'
-        data = b':GR0\n' + token.encode('utf8') + b'\x12\x042031\x1a\x13com.oppo.usercenter"\x03ext*\x032.0H2'
+        data = b':GR0\nF' + token.encode('utf8') + b'\x12\x042031\x1a\x13com.oppo.usercenter"\x03ext*\x032.0H2'
+        print(data)
         headers = {
             'Host': 'ticket.keke.cn',
             'Accept-Encoding': 'gzip',
@@ -172,8 +181,8 @@ def toHex(input):
 
 if __name__ == '__main__':
     oppo = Oppo()
-    # token = oppo.login('17085024908', 'Qq112233')
-    oppo.pay("TOKEN_c3Pckdf2KppLS1HrpoOAhT5E9J/Zdn6aheggdB5XC0ayXjg6YkMifUMqy+huprqU", '', '')
+    token = oppo.login('17085024908', 'Qq112233')
+    oppo.pay(token, '', '')
     # sign = signMD5("usercenter170850249083ce25a66d5b3a8cd661024fea6c79388", "9effeac61b7ad92a9bef3da596f2158b", "UTF-8")
     # print(sign)
     # print(sign == '91905ac6c4af8e68064537da201029aa')
