@@ -1,0 +1,362 @@
+18-04-26 21:16:51-:0 - 439-D-DataLoader-New a DataLoader Object
+18-04-26 21:16:51-:0 - 439-D-JSONLoader-New a JSONLoader Object
+18-04-26 21:16:51-:0 - 439-D-URLLoader-setUrl : http://i.uc.nearme.com.cn/NearMeGetPersonalInfo
+18-04-26 21:16:51-:0 - 439-D-DataLoader-New a DataLoader Object
+18-04-26 21:16:51-:0 - 439-D-JSONLoader-New a JSONLoader Object
+18-04-26 21:16:51-:0 - 439-D-URLLoader-setUrl : http://i.uc.nearme.com.cn/Experience/checkver
+18-04-26 21:16:51-:0 - 444-D-DataLoader-loadURLByPost onCompleted responseCode: 200
+18-04-26 21:16:51-:0 - 443-D-DataLoader-loadURLByPost onCompleted responseCode: 200
+18-04-26 21:16:53-:0 - 1-D-ActionActivity-onCreate
+18-04-26 21:16:53-:0 - 1-D-ActionActivity-doPluginUpdate called 
+18-04-26 21:16:53-:0 - 1-U-ActionActivity-doPluginUpdate canceled,no plugin need update
+18-04-26 21:16:53-:0 - 1-D-ActionActivity-mIsFromThirdAppToUsercenter false
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 1-D-ActionActivity-call checkPluginUpgrade
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-HttpRequestProcesser-get request. url is http://plugin.platform.keke.cn/queryPluginList?dataVer=0
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-HttpRequestProcesser-header  ua = X/MuMu/720/1280/4.4.4/19/com.oppo.usercenter/3.3.0/nearme_plugin/330/wifi/MDA4Nzk2NzQ4MDgzNTU0
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-HttpRequestProcesser-header  checksum = bcd929b25a4340d054bd3af3c0654776
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-HttpRequestProcesser-UA is X/MuMu/720/1280/4.4.4/19/com.oppo.usercenter/3.3.0/nearme_plugin/330/wifi/MDA4Nzk2NzQ4MDgzNTU0
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-HttpRequestProcesser-checkSum is bcd929b25a4340d054bd3af3c0654776
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 1-U-ActionActivity-start plugin : 支付插件
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 1-U-JSONUtil-createDataReportParam : {"value":"1001","id":"host","eventTag":"plugin_startup","type":1,"version":"1"}
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-D-ActionActivity-failed
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-ActionActivity-checkPluginUpgrade failed. respContent is failed
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 449-U-HttpRequestProcesser-get request server not responsed.the status code is 503 ,request url is http://plugin.platform.keke.cn/queryPluginList?dataVer=0
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 453-U-HttpRequestProcesser-post request. url is http://plugin.platform.keke.cn/uploadRTData
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 453-U-HttpRequestProcesser-post request server not responsed.the status code is 503 ,request url is http://plugin.platform.keke.cn/uploadRTData
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-openActivity call call
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-overridePendingTransition called
+18-04-26 21:16:53-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-mPluginProxyAnim is 2130968583@2130968584
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeActivity-add activity : MainChargeActivity
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-NearmeActivity-mActivityList = [MainChargeActivity]  ,mActivityStack = [MainChargeActivity]
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeActivity-mEntryAnim is 2130968583@2130968584
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeActivity-anim param : 2130968583   ,2130968584
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 454-U-PayBox-new a paybox
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 454-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 454-D-PayBox-submit request, wait
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 454-D-PayBox-submit request,  mMessQueue createdl
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 454-D-PayBox-getTaskID=1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.ActivityDirectHelper- parse request  jsonString is:{"mExchangeRatio":1,"mProductDesc":"OPPO会员买可币","mPackageName":"com.oppo.usercenter","mCurrencyName":"可币","mAmount":50,"ENV_TEST":0,"mPartnerOrder":"cdae69e0da164103a17345cbdbdcb9fa","mType":0,"mEnv":0,"mCount":1,"mToken":"TOKEN_XRnzGo7lPOLw03DVmRSNIYe7LDlB41QGECVROav91wB04c2Drm7Fw0Mqy+huprqU","mSource":"OPPO会员","mProductName":"OPPO会员买可币","mNotifyUrl":"http:\/\/i.vc.nearme.com.cn\/NativeRechargeCallback","mPartnerId":"2031","mRequestCode":1002,"mChannelId":"10000","mAttach":"","mAppVersion":"1.0","ENV_RELEASE":1}
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: ENV_RELEASE=1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : ENV_RELEASE value:1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: ENV_TEST=0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : ENV_TEST value:0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for balance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for balanceLoad
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mAmount=50.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mAmount value:50.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mAppVersion=1.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mAppVersion value:1.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mAttach=
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mAttach value:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mChannelId=10000
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mChannelId value:10000
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for mChargeLimit
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mCount=1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mCount value:1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mCurrencyName=可币
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mCurrencyName value:可币
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mEnv=0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mEnv value:0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mExchangeRatio=1.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mExchangeRatio value:1.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mNotifyUrl=http://i.vc.nearme.com.cn/NativeRechargeCallback
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mNotifyUrl value:http://i.vc.nearme.com.cn/NativeRechargeCallback
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for mOriginalAmount
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mPackageName=com.oppo.usercenter
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mPackageName value:com.oppo.usercenter
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mPartnerId=2031
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mPartnerId value:2031
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mPartnerOrder=cdae69e0da164103a17345cbdbdcb9fa
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mPartnerOrder value:cdae69e0da164103a17345cbdbdcb9fa
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for mPay
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mProductDesc=OPPO会员买可币
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mProductDesc value:OPPO会员买可币
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mProductName=OPPO会员买可币
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mProductName value:OPPO会员买可币
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for mProductPrice
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mRequestCode=1002
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mRequestCode value:1002
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- parse error. exception : No value for mSign
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mSource=OPPO会员
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mSource value:OPPO会员
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mToken=TOKEN_XRnzGo7lPOLw03DVmRSNIYe7LDlB41QGECVROav91wB04c2Drm7Fw0Mqy+huprqU
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mToken value:TOKEN_XRnzGo7lPOLw03DVmRSNIYe7LDlB41QGECVROav91wB04c2Drm7Fw0Mqy+huprqU
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest-from sdk: mType=0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayRequest- set field : mType value:0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-key:enterPay value: ext:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-activity id is:1 PayRequest is not null ,request is:{"mExchangeRatio":1,"mProductDesc":"OPPO会员买可币","mCurrencyName":"可币","mAmount":50,"mType":0,"balance":0,"mToken":"TOKEN_XRnzGo7lPOLw03DVmRSNIYe7LDlB41QGECVROav91wB04c2Drm7Fw0Mqy+huprqU","mSource":"OPPO会员","mProductName":"OPPO会员买可币","mNotifyUrl":"http:\/\/i.vc.nearme.com.cn\/NativeRechargeCallback","mChannelId":"10000","mProductPrice":0,"mOriginalAmount":1,"mChargeLimit":0.01,"mPay":0,"mPackageName":"com.oppo.usercenter","balanceLoad":false,"ENV_TEST":0,"mPartnerOrder":"cdae69e0da164103a17345cbdbdcb9fa","mEnv":0,"mCount":1,"mPartnerId":"2031","mRequestCode":1002,"mAttach":"","mAppVersion":"1.0","ENV_RELEASE":1}
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-onResume:mIsPending=false&mNeedToGoneActivty=false
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 460-U-MemoryMonitor-start memory-leak check
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 460-U-MemoryMonitor-very good. no memory leak
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 462-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=2
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 463-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity- UIHanlder handleMessage start ,msg is:3
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-PayBox-new a paybox
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-hard code setting is: 1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-TicketProtocol- requestAuth start：tocken：TOKEN_XRnzGo7lPOLw03DVmRSNIYe7LDlB41QGECVROav91wB04c2Drm7Fw0Mqy+huprqU pkg:com.oppo.usercenter partid:2031
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayBox-getTaskID=1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-TicketProtocol- requestAuth end
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-TicketProtocol-key:enterActivity value: ext:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-DataLoader-New a DataLoader Object
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-ProtoBufLoader-new a ProtoBufLoader object
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-URLLoader-setUrl : https://ticket.keke.cn/tksv/post/pass
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest end,waiting for response,https://ticket.keke.cn/tksv/post/pass
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-consumeMessage end
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=3
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 467-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-gotoChargeCenterOrBuyactivity is expend :false amount:50.0 limit:0.01
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-gotoChargeCenterOrBuyactivity:end
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity- UIHanlder handleMessage ends
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-openActivity call call
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-overridePendingTransition called
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-onPause
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-mPluginProxyAnim is 2130968578@2130968579
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeActivity-add activity : ChargeCenterActivity
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-NearmeActivity-mActivityList = [MainChargeActivity, ChargeCenterActivity]  ,mActivityStack = [MainChargeActivity, ChargeCenterActivity]
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeActivity-mEntryAnim is 2130968578@2130968579
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-NearmeActivity-anim param : 2130968578   ,2130968579
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.ChargeCenterActivity-onCreate
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.ChargeCenterActivity-key:charge_center value: ext:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.ChargeCenterActivity-mPayRequest is not null,mPayRequest.mAmount is:50.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=4
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 468-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.NoticeManager-querySpeakerByPage size:  is null
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-queryByShowType size: 0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-getFrequeUsedChannels size is:0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-queryByShowType size: 6
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-getOtheChannels size is:6
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.ChargeCenterActivity- onResume
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 469-U-MemoryMonitor-start memory-leak check
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 469-U-MemoryMonitor-very good. no memory leak
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 432-D-URLLoader-spdy response code is : 200
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 432-D-DataLoader-loadURLBySpdy onCompleted responseCode: 200
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 432-D-TicketProtocol- start parse ticket response
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 432-D-TicketProtocol- ACTION_TICKET result , sp:d2kxcEhkZmVFbHhRRG12Y2dFMGtUNktzSzA1SjlyZ3VmR09sTU9zMllHb2R3akNENlFxemE3Q1FCcFNmcFBWWGhQd2lrWUplN1BpRTRHcVFsZjRPRzdZOEFMUDVkTE9NZzF5QzJ1TnM3dmo3NkVXR0tacXlDbndWT0NyQktSa1dNMDVwcHBGT1hxTDVSVFg4UEJoelA4aG1yOHRpdFVYM3ZCUXJweHJSNlVvd0ZlOXhib3Jvd3ZNOWNWUlA3R1BsQ2g1Z3hMR0N3ODNiSG9oWVY0RU5lNG4wam43SUx3QnJ4TXF4RDhmcTNDdHFsdks0cFRhcWh2WnNscXZpMFpFRWlXaHhsZXV0Q3gzMHR1VW9EWnRmUzRES0tIZkQ4SkxuV3lWaXRGMGF0SnlQelpDam0zQzk3M01GN3ROWHdmUHV3bW5yelNReGZ3cXRzblYwSnlHdTJZZUE5dmtNTnRlY2k0eUNJRzRmcTlWQzRiSGl1Nk9EQjBObkEyRnVoNWcydEJtZHlIUG9jNU5zTlBuRzA5UUJzVkxBcUhZSm9VNlIzaXY5ZTMwZFpPaU5LdllSempJdUttUkdvZ1Z2MzdaaXNqdjRYNWNKaUFnZFN1U0lHQjQ5UnM3MktBNnFrNUs4VjQxRmZ5NVAxTXYyUnpTTEh1ckoyOWp2N2xxZ1NzTTdXTzNnTnRtS3QyTTJ6NnJWYlVDZVN3a3hOTHJ4QTI3UGtpeFY1RWV6TFhqbkdRRzBOUUthVVJQUjJ2WGhrMjJJc3VXbUJaNXh5UkFaWnNQaDFlZFhWMjVIWWhoTXpaMnE2czByU2xVYnVLbWVkZWpJNTJMTmwzYUZjc05BZFdQZWVsTk9WWFVZV0JVOWEwQkMyWmEwdnU1V2Qzck1tRDROSG5CV0lFUnJ3VnpHNmpsSVNuWEtRVnR1elZkU2ZNOFNGWWpaMFFBcEVnSlN1YThCUmoyQ1VaMHBFSkVCNTZsdmUzQnU0VGV1OGVITld2ZU9Ocmg5eUpEWXdtbzVhUXUxbXNGVlJnTjlHQWV3RUhlMkNIREZPb3BtVnZQQkhPTU0=     
+  tp:561fc208831443848d5d7f7444424802  
+ mp :vCXRD5OU2RNg1v6ki6r60p27r4Y9578w4Q633nQGa21pz6uvHJ3NjVY7z59eHbGd cost :1524748614601
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 432-D-PayBox-doDiapatchRequest ProtocolListener,onCompleted
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 432-D-PayBox-request cost time is:438
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper- requestHandler  start  ,msg is:0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper- RequestHandler :0 arg 1 :0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper- mTicketSuccess
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper-ticket result code :0000
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper-obj is not null: 
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper-key:enterActivity value: ext:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper-sendLoadedBraodcast :nearme.plugin.action.check.ticket.finish_1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper-sendLoadedBraodcast :android.intent.action.BANLANCE_LOADED_1
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.PayMentAsynTask-request requestPayments ,mPaymentVersion is:1.0.1.1524747592792
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.PaymentsProtocol-  PaymentsProtocol requestPayments is:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=5
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol- protocol set header  tp is:561fc208831443848d5d7f7444424802 rv is：wi1pHdfe
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.PaymentsProtocol-  header package is:com.oppo.usercenter
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.PaymentsProtocol-  setValueversion:1.0.1.1524747592792
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 472-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol-entry.getValue().toString().trim() :version: "1.0"
+t_p: "561fc208831443848d5d7f7444424802"
+imei: "008796748083554"
+model: "MuMu"
+apntype: "1"
+package: "com.oppo.usercenter"
+r_v: "wi1pHdfe"
+ext: ""
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol-entry.getValue().toString().trim() :0.0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.PaymentsProtocol-  md 5  string is:version: "1.0"
+t_p: "561fc208831443848d5d7f7444424802"
+imei: "008796748083554"
+model: "MuMu"
+apntype: "1"
+package: "com.oppo.usercenter"
+r_v: "wi1pHdfe"
+ext: ""0.0vCXRD5OU2RNg1v6ki6r60p27r4Y9578w4Q633nQGa21pz6uvHJ3NjVY7z59eHbGd
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.PaymentsProtocol-  setSign:7EEFAFA5320D1F1E5EF77538AA04CB29
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayBox-getTaskID=2
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.PaymentsProtocol- Builder is:com.nearme.plugin.PaymentsPbEntity$Request$Builder@218fef54
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-DataLoader-New a DataLoader Object
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-ProtoBufLoader-new a ProtoBufLoader object
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-URLLoader-setUrl : https://nativepay.keke.cn/plugin/post/payments
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest end,waiting for response,https://nativepay.keke.cn/plugin/post/payments
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-consumeMessage end
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol- protocol set header  tp is:561fc208831443848d5d7f7444424802 rv is：wi1pHdfe
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol-entry.getValue().toString().trim() :version: "1.0"
+t_p: "561fc208831443848d5d7f7444424802"
+imei: "008796748083554"
+model: "MuMu"
+apntype: "1"
+package: "com.oppo.nearme"
+r_v: "wi1pHdfe"
+ext: ""
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol-entry.getValue().toString().trim() :0
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol-entry.getValue().toString().trim() :202
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.NoticeProtocol-  md 5  string is:version: "1.0"
+t_p: "561fc208831443848d5d7f7444424802"
+imei: "008796748083554"
+model: "MuMu"
+apntype: "1"
+package: "com.oppo.nearme"
+r_v: "wi1pHdfe"
+ext: ""0202vCXRD5OU2RNg1v6ki6r60p27r4Y9578w4Q633nQGa21pz6uvHJ3NjVY7z59eHbGd
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.NoticeProtocol-  setSign:41F36F1B042449C913F256BE4C14ECCF
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-U-PayBox-PayBox getInstance
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-PayBox-getTaskID=3
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-DataLoader-New a DataLoader Object
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-ProtoBufLoader-new a ProtoBufLoader object
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-URLLoader-setUrl : https://nativepay.keke.cn/plugin/post/notice
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest end,waiting for response,https://nativepay.keke.cn/plugin/post/notice
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 464-D-PayBox-consumeMessage end
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.NoticeProtocol- NoticeProtocol end:request builder is:version: "1.0"
+t_p: "561fc208831443848d5d7f7444424802"
+imei: "008796748083554"
+model: "MuMu"
+apntype: "1"
+package: "com.oppo.nearme"
+r_v: "wi1pHdfe"
+ext: ""0202vCXRD5OU2RNg1v6ki6r60p27r4Y9578w4Q633nQGa21pz6uvHJ3NjVY7z59eHbGd
+18-04-26 21:16:54-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.TicketHelper- requestHandler  end 
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 432-D-URLLoader-spdy response code is : 200
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 432-D-DataLoader-loadURLBySpdy onCompleted responseCode: 200
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 432-D-PayBox-doDiapatchRequest ProtocolListener,onCompleted
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 432-D-PayBox-request cost time is:244
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 473-D-com.nearme.plugin.pay.activity.helper.NoticeManager- contact version is: contact  is: tele is:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.NoticeManager-querySpeakerByPage size:  is null
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 443-D-URLLoader-spdy response code is : 200
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 443-D-DataLoader-loadURLBySpdy onCompleted responseCode: 200
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 443-D-PayBox-doDiapatchRequest ProtocolListener,onCompleted
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 443-D-PayBox-request cost time is:300
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.PayMentAsynTask- requestHandler  start  ,msg is:1
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.PayMentAsynTask-doAfterGetPayments save
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-enter updatePayments  
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-PaymentsPbEntity code is:0000 value version is:1.0.1.1524748614740 local version is:1.0.1.1524747592792  PaychannelItem size:6
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-com.nearme.plugin.pay.persistence.entity.ChannelEntity deleted：true
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager- updatePayments :name:银行卡 des:推荐储蓄卡、信用卡持有者使用 iconWeburl:http://opayfs.nearme.com.cn/insidepay/images/near-me-y-v3.png iconLocalpath: /storage/emulated/0/nearme/pay/icons/near-me-y-v3.png position:3 isVisible:1 channel_id:bankplatform mShowType:0 ext:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-updateOrInsert ChannelEntity
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-insert  ChannelEntity ChannelEntity:bankplatform
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager- updatePayments :name:支付宝 des:推荐有支付宝账号的用户使用 iconWeburl:http://opayfs.nearme.com.cn/images/insidepay/images/支付宝推荐.png iconLocalpath: /storage/emulated/0/nearme/pay/icons/支付宝推荐.png position:0 isVisible:1 channel_id:alipay mShowType:0 ext:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-updateOrInsert ChannelEntity
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-insert  ChannelEntity ChannelEntity:alipay
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager- updatePayments :name:手机充值卡 des:支持移动、联通、电信的充值卡 iconWeburl:http://opayfs.nearme.com.cn/images/insidepay/images/icon_charge.png iconLocalpath: /storage/emulated/0/nearme/pay/icons/icon_charge.png position:5 isVisible:1 channel_id:szfpay mShowType:0 ext:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-updateOrInsert ChannelEntity
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-insert  ChannelEntity ChannelEntity:szfpay
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager- updatePayments :name:QQ钱包 des:推荐有财付通账号、QQ账号的用户使用 iconWeburl:http://opayfs.nearme.com.cn/images/insidepay/images/qq钱包icon.png iconLocalpath: /storage/emulated/0/nearme/pay/icons/qq钱包icon.png position:2 isVisible:1 channel_id:qqwallet mShowType:0 ext:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-updateOrInsert ChannelEntity
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-insert  ChannelEntity ChannelEntity:qqwallet
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager- updatePayments :name:游戏点卡 des:支持骏网一卡通、可币卡 iconWeburl:http://opayfs.nearme.com.cn/images/insidepay/images/icon_game_default.png iconLocalpath: /storage/emulated/0/nearme/pay/icons/icon_game_default.png position:7 isVisible:1 channel_id:heepay mShowType:0 ext:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-updateOrInsert ChannelEntity
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-insert  ChannelEntity ChannelEntity:heepay
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager- updatePayments :name:微信支付 des:推荐微信绑卡用户使用 iconWeburl:http://opayfs.nearme.com.cn/images/insidepay/images/icon_nowpay.png iconLocalpath: /storage/emulated/0/nearme/pay/icons/icon_nowpay.png position:1 isVisible:1 channel_id:wxpay mShowType:0 ext:
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-updateOrInsert ChannelEntity
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-insert  ChannelEntity ChannelEntity:wxpay
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.PayMentAsynTask-sendLoadedBraodcast :android.intent.action.PAYMENTS_LOADED
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.PayMentAsynTask- requestHandler  end 
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-queryByShowType size: 0
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-getFrequeUsedChannels size is:0
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-queryByShowType size: 6
+18-04-26 21:16:55-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.model.ChannelManager-getOtheChannels size is:6
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.ChargeCenterActivity-on item click:true
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-GameCardChannelHandler-key:click_gameCard value: ext:
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=6
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 462-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-openActivity call call
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-overridePendingTransition called
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-mPluginProxyAnim is 2130968578@2130968579
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-NearmeActivity-add activity : GameCardActivityNew
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-U-NearmeActivity-mActivityList = [MainChargeActivity, ChargeCenterActivity, GameCardActivityNew]  ,mActivityStack = [MainChargeActivity, ChargeCenterActivity, GameCardActivityNew]
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-NearmeActivity-mEntryAnim is 2130968578@2130968579
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-NearmeActivity-anim param : 2130968578   ,2130968579
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.GameCardActivityNew-key:enterActivity value: ext:
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=7
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 463-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.NoticeManager-querySpeakerByPage size:  is null
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 481-U-MemoryMonitor-start memory-leak check
+18-04-26 21:16:56-com.oppo.usercenter:28913 - 481-U-MemoryMonitor-very good. no memory leak
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 1-D-gamecard-key:chooseCardValue value: ext:
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 1-D-gamecard-key:inputCardNO_GC value: ext:
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=8
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 467-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=9
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:16:58-com.oppo.usercenter:28913 - 468-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:17:12-com.oppo.usercenter:28913 - 1-D-gamecard-key:inputPW_GC value: ext:
+18-04-26 21:17:12-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:17:12-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=10
+18-04-26 21:17:12-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:17:12-com.oppo.usercenter:28913 - 472-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.protocol.entity.BasicProtocol- protocol set header  tp is:561fc208831443848d5d7f7444424802 rv is：QrpxrR6U
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-SimplePayProtocol-simplepay:5|1609130348119130|9650101982520450
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-SimplePayProtocol-basepay:channelId: "10000"
+notifyurl: "http://i.vc.nearme.com.cn/NativeRechargeCallback"
+productName: "OPPO\344\274\232\345\221\230\344\271\260\345\217\257\345\270\201"
+productDesc: "OPPO\344\274\232\345\221\230\344\271\260\345\217\257\345\270\201"
+partnercode: "w6tEilmWsKLvCM2S8QFIuIg2excaVzrYJAu4AOufevJiHMkxkbBF9wKk4dNWygTUQZ0vjZnF/7uv\npLcfgmCu5DeKme33zHnUog3BIkX25HVflAB0cN1F0GnlATLi4Y77OH+48KH7VUkeGyRqdAk5iqD5\nYArNCB+htAD8DXBPdRY=\n"
+appversion: "1.0"
+currencyName: "\345\217\257\345\270\201"
+rate: 1.0
+partnerorder: "null"
+
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-U-PayBox-PayBox getInstance
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-PayBox-getTaskID=4
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-SimplePayProtocol- SimplePayProtocol end
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-gamecard-key:click_PaybyGameCard value: ext:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest start:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 464-D-DataLoader-New a DataLoader Object
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 464-D-ProtoBufLoader-new a ProtoBufLoader object
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 464-D-URLLoader-setUrl : https://nativepay.keke.cn/plugin/post/simplepay
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 464-D-PayBox-doDiapatchRequest end,waiting for response,https://nativepay.keke.cn/plugin/post/simplepay
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 464-D-PayBox-consumeMessage end
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=11
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 462-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 432-D-URLLoader-spdy response code is : 200
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 432-D-DataLoader-loadURLBySpdy onCompleted responseCode: 200
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 432-D-PayBox-doDiapatchRequest ProtocolListener,onCompleted
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 432-D-PayBox-request cost time is:410
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-openActivity call call
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-overridePendingTransition called
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-NearmeProxyActivity-mPluginProxyAnim is 2130968578@2130968579
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-NearmeActivity-add activity : PayResultActvity
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-U-NearmeActivity-mActivityList = [MainChargeActivity, ChargeCenterActivity, GameCardActivityNew, PayResultActvity]  ,mActivityStack = [MainChargeActivity, ChargeCenterActivity, GameCardActivityNew, PayResultActvity]
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-NearmeActivity-mEntryAnim is 2130968578@2130968579
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-NearmeActivity-anim param : 2130968578   ,2130968579
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.PayResultActvity-onCreate : 
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.PayResultActvity-key:enterActivity value: ext:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.PayResultActvity-key:enterActivity value: ext:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-U-com.nearme.plugin.pay.activity.PayResultActvity-doNeedQuery，to load : false 
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.PayResultActvity- set charge view: mSuccess:false mIsExpend:false
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=12
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 456-U-PayBox-PayBox getInstance
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 456-D-PayBox-getTaskID=13
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 459-D-PayBox-doDiapatchRequest start:
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 463-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 467-D-PayBox- ProtocolListener,onCompleted
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 766-U-MemoryMonitor-start memory-leak check
+18-04-26 21:17:21-com.oppo.usercenter:28913 - 766-U-MemoryMonitor-very good. no memory leak
+18-04-26 21:17:23-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.helper.RequestDisPatcher-returnPay need to kill process : true
+18-04-26 21:17:23-com.oppo.usercenter:28913 - 1-D-com.nearme.plugin.pay.activity.MainChargeActivity-onDestroy maincharge
+18-04-26 21:17:23-com.oppo.usercenter:28913 - 1-D-ActionActivity-notifypkg : com.oppo.usercenter
+18-04-26 21:17:23-com.oppo.usercenter:28913 - 1-D-ActionActivity-response recv,then finished
+18-04-26 21:17:23-com.oppo.usercenter:28913 - 1-D-ActionActivity-onDestroy
