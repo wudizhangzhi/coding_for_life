@@ -135,6 +135,9 @@ d2kxcEhkZmVFbHhRRG12Y2dFMGtUNktzSzA1SjlyZ3VmR09sTU9zMllHb2R3akNENlFxemE3Q1FCcFNm
 
 
 """
+# 好像是支付的参数
+# 5|1609130348119130|9650101982520450
+
 channelId: "10000"
 notifyurl: "http://i.vc.nearme.com.cn/NativeRechargeCallback"
 productName: "OPPO\344\274\232\345\221\230\344\271\260\345\217\257\345\270\201"
@@ -144,4 +147,7 @@ appversion: "1.0"
 currencyName: "\345\217\257\345\270\201"
 rate: 1.0
 partnerorder: "null"
+
+
+
 """
