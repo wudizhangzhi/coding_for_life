@@ -7,6 +7,7 @@ import logging
 import os
 
 import requests
+from PIL import Image
 from user_agent import generate_user_agent
 from lxml import etree
 import re
@@ -19,6 +20,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
+from base.yundama import recognize_by_http
 
 from cookie_save import ACCOUNT_LIST
 
@@ -41,8 +43,13 @@ RULE = {
     # 'show_error': {'type': 'id', 'name': 'error_tips'},
     #### 验证码部分 ####
     # 'captcha_tuple': (380.0, 515.0, 69, 24),  # x, y, w, h
-    # 'captcha_img': {'type': 'id', 'name': 'ctl00_MainContent_imgExtCode'},
-    # 'captcha': {'type': 'id', 'name': 'newVcodeArea'},
+    'captcha_img': {'type': 'id', 'name': 'captcha-img'},
+    'captcha': {'type': 'id', 'name': 'captcha-code'},
+    # 短信验证码
+    'sms': {'type': 'id', 'name': 'verify-mod-send_ticket_tip'},
+    'sms_code': {'type': 'path', 'name': '//*[@id="verify-mod-SMS"]/div[1]/div[1]/label/input'},
+    'sms_code_fetch': {'type': 'path', 'name': '//*[@id="verify-mod-SMS"]/div[1]/div[1]/span/a'},
+    'sms_submit': {'type': 'path', 'name': '//*[@id="verify-mod-SMS"]/div[3]/a'},
     # 'slideblock': {'type': 'id', 'name': 'slideBlock'},
     # 'slidebkg': {'type': 'id', 'name': 'slideBkg'},
     # 'tcaptcha_drag_button': {'type': 'id', 'name': 'tcaptcha_drag_button'},
@@ -124,8 +131,8 @@ class Xiaomi(object):
     def init_driver(self, proxy=None):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
-        dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
-        # dcap["phantomjs.page.settings.userAgent"] = (choice(AGENTS_ALL))
+        # dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
+        dcap["phantomjs.page.settings.userAgent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"
         # 不载入图片，爬页面速度会快很多
         # dcap["phantomjs.page.settings.loadImages"] = False
         try:
@@ -223,8 +230,50 @@ class Xiaomi(object):
         time.sleep(self.interval_time)
         return driver
 
-    def search_mibi(self, username, password):
-        driver = self.login(username, password)
+    def need_qrcode(self, driver):
+        if 'captcha_img' in self.rule:
+            captcha_img = driver.find_element_by_xpath(self.rule['captcha_img']['name'])
+            if captcha_img:
+                return True
+        return False
+
+    def check_qrcode(self, driver, username):
+        # 如果有验证码
+        captcha_img = driver.find_element_by_xpath('//*[@id="captcha-img"]')
+        # 获取二维码坐标
+        location = captcha_img.location
+        size = captcha_img.size
+        # 截取二维码
+        x = int(location.get('x', 673))
+        y = int(location.get('y', 483))
+        w = int(size.get('width', 88))
+        h = int(size.get('height', 35))
+        box = (x, y, x + w, y + h)
+
+        _screenshot_filename = 'qrcode/screen_%s.png' % username
+        _captcha_filename = 'qrcode/capthca_%s.png' % username
+        logging.debug(u'截图, 保存为 %r' % _screenshot_filename)
+        captcha_img.screenshot(_screenshot_filename)
+        screenshot = Image.open(_screenshot_filename)
+        logging.debug(u'从截图中裁剪出验证码, 保存为 %r' % _captcha_filename)
+        img_crop = screenshot.crop(box)
+        img_crop.save(_captcha_filename)
+        screenshot.close()
+        img_crop.close()
+        # 识别验证码
+        return driver
+
+    def sms_check(self, driver):
+        btn_sms_code_fetch = driver.find_element_by_xpath(self.rule['sms_code_fetch']['name'])
+        btn_sms_code_fetch.click()
+
+    def enter_sms_code(self, code, driver):
+        sms_code = driver.find_element_by_xpath(self.rule['sms_code']['name'])
+        sms_code.send_keys(code)
+        btn_sms_submit = driver.find_element_by_xpath(self.rule['sms_submit']['name'])
+        btn_sms_submit.click()
+
+    def search_mibi(self, driver):
         driver.get('https://mibi.wali.com/')
         btn_login = driver.find_element_by_xpath('//*[@id="main_nav"]/div/nav[2]/a[1]')
         btn_login.click()
@@ -236,13 +285,10 @@ class Xiaomi(object):
 
         balance = driver.find_element_by_xpath('//*[@id="main_wrapper"]/div[2]/span[2]/em')
         gift = driver.find_element_by_xpath('//*[@id="main_wrapper"]/div[2]/span[3]/a')
-        print(balance.text)
-        print(gift.text)
         return balance.text, gift.text
 
 
 if __name__ == '__main__':
 
     xm = Xiaomi()
-    print(xm.search_mibi('wudizhangzhi@163.com', 'zzc549527xm'))
 

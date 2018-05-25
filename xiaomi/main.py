@@ -1,5 +1,4 @@
 import logging
-
 import time
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -10,12 +9,14 @@ import traceback
 from xiaomi import Xiaomi
 
 from MainWindow import Ui_MainWindow
+from yundama import recognize_by_http
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='log.log',
                     filemode='w')
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs):
@@ -39,7 +40,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def start_search_balance(self):
         # 重置
         self.progressBar.setValue(0)
-        self.textBrowser.append('-'*40)
+        self.textBrowser.append('-' * 40)
         self.textBrowser.append('')
 
         starttime = time.time()
@@ -57,8 +58,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             try:
                 self.textBrowser.append('开始查询: {}, 第{}个'.format(username, count))
                 QApplication.processEvents()
+                # 登陆
+                driver = self.xiaomi.login(username, password)
+                # 如果需要验证码
+                yum_username = self.textEdit_2.toPlainText()
+                yum_password = self.textEdit_3.toPlainText()
+                if self.checkBox.isChecked() and yum_username and yum_password:
+                    logging.debug('云打码用户名: {}  密码{}'.format(yum_username, yum_password))
+                    # 识别验证码
+                    file = 'qrcode/captcha_%s.png' % username
+                    result, balance = recognize_by_http(file, yum_username, yum_password)
+                    # 更新显示
+                    self.textBrowser.append('云打码余额: {}, 识别结果: {}'.format(balance, result))
+                    QApplication.processEvents()
+                    driver = self.xiaomi.enter_sms_code(result, driver)
+                else:
+                    pass
+
                 # 开始查询
-                balance, userTicketBalance = self.xiaomi.search_mibi(username, password)
+                balance, userTicketBalance = self.xiaomi.search_mibi(driver)
                 # if int(ret.get('respCode', 0)) != 200:
                 #     self.textBrowser.append('错误: {}'.format(ret))
                 #     logging.error(ret)
@@ -94,6 +112,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.textEdit.setText(self.input_data_path)
         else:
             self.textBrowser.append('请选择文件!!!')
+
+    def getText(self):
+        text, okPressed = QInputDialog.getText(self, "Get text", "请输入短信验证码:", QLineEdit.Normal, "")
+        if okPressed and text != '':
+            print(text)
+            self.textBrowser.append('输入的短信验证码：%s' % text)
 
 
 if __name__ == '__main__':
