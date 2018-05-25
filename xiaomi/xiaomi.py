@@ -20,6 +20,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
 
+from cookie_save import ACCOUNT_LIST
+
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     datefmt='%a, %d %b %Y %H:%M:%S',
@@ -221,7 +223,8 @@ class Xiaomi(object):
         time.sleep(self.interval_time)
         return driver
 
-    def search_mibi(self, driver):
+    def search_mibi(self, username, password):
+        driver = self.login(username, password)
         driver.get('https://mibi.wali.com/')
         btn_login = driver.find_element_by_xpath('//*[@id="main_nav"]/div/nav[2]/a[1]')
         btn_login.click()
@@ -235,9 +238,11 @@ class Xiaomi(object):
         gift = driver.find_element_by_xpath('//*[@id="main_wrapper"]/div[2]/span[3]/a')
         print(balance.text)
         print(gift.text)
+        return balance.text, gift.text
 
 
 if __name__ == '__main__':
+
     xm = Xiaomi()
-    driver = xm.login('', '')
-    xm.search_mibi(driver)
+    print(xm.search_mibi('wudizhangzhi@163.com', 'zzc549527xm'))
+
