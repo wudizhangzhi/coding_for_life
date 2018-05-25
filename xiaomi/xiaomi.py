@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import shutil
 
 import requests
 from PIL import Image
@@ -15,12 +16,11 @@ import time
 from hashlib import md5
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
-from base.yundama import recognize_by_http
 
 from cookie_save import ACCOUNT_LIST
 
@@ -32,7 +32,7 @@ logging.basicConfig(level=logging.DEBUG,
 
 RULE = {
     'url_login': 'https://account.xiaomi.com/pass/serviceLogin',
-    # 'startlogin': {'type': 'id', 'name': 'login'},
+    'startlogin': {'type': 'path', 'name': '//*[@id="main_nav"]/div/nav[2]/a[1]'},
     # 'login_frame': {'type': 'id', 'name': 'login_frame'},
     # 'switch_plogin': {'type': 'id', 'name': 'switcher_plogin'},
     'username': {'type': 'id', 'name': 'username'},
@@ -72,6 +72,9 @@ class Xiaomi(object):
         # selenium settings
         self.rule = RULE
         self.interval_time = 1
+        # init folder
+        shutil.rmtree('qrcode')
+        os.mkdir('qrcode')
 
     def _login(self, username, password):
         _sign = '2&V1_passport&wqS4omyjALxMm//3wLXcVcITjEc='
@@ -132,7 +135,8 @@ class Xiaomi(object):
         dcap = dict(DesiredCapabilities.PHANTOMJS)
         # 从USER_AGENTS列表中随机选一个浏览器头，伪装浏览器
         # dcap["phantomjs.page.settings.userAgent"] = (generate_user_agent(os=('linux', 'mac')))
-        dcap["phantomjs.page.settings.userAgent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"
+        dcap[
+            "phantomjs.page.settings.userAgent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36"
         # 不载入图片，爬页面速度会快很多
         # dcap["phantomjs.page.settings.loadImages"] = False
         try:
@@ -180,13 +184,14 @@ class Xiaomi(object):
 
         driver.set_page_load_timeout(60)
         driver.set_window_size(1366, 942)
-        driver.get(self.rule['url_login'])
+        # driver.get(self.rule['url_login'])
+        driver.get('https://mibi.wali.com/')
 
         logging.debug(u'获取登录界面')
         if 'startlogin' in self.rule:
-            btn_login = driver.find_element(self.get_by(self.rule['startlogin']['type']),
-                                            self.rule['startlogin']['name'])
+            btn_login = driver.find_element_by_xpath(self.rule['startlogin']['name'])
             btn_login.click()
+            time.sleep(self.interval_time)
         if 'login_frame' in self.rule:
             logging.debug(u'进入iframe')
             # 转到登录用iframe
@@ -232,9 +237,23 @@ class Xiaomi(object):
 
     def need_qrcode(self, driver):
         if 'captcha_img' in self.rule:
-            captcha_img = driver.find_element_by_xpath(self.rule['captcha_img']['name'])
-            if captcha_img:
-                return True
+            try:
+                captcha_img = driver.find_element(self.get_by(self.rule['captcha_img']['type']),
+                                                  self.rule['captcha_img']['name'])
+                if captcha_img:
+                    return True
+            except NoSuchElementException:
+                pass
+        return False
+
+    def need_sms_code(self, driver):
+        if 'sms' in self.rule:
+            try:
+                sms = driver.find_element(self.rule['sms']['type'], self.rule['sms']['name'])
+                if sms:
+                    return True
+            except NoSuchElementException:
+                pass
         return False
 
     def check_qrcode(self, driver, username):
@@ -251,7 +270,7 @@ class Xiaomi(object):
         box = (x, y, x + w, y + h)
 
         _screenshot_filename = 'qrcode/screen_%s.png' % username
-        _captcha_filename = 'qrcode/capthca_%s.png' % username
+        _captcha_filename = 'qrcode/captcha_%s.png' % username
         logging.debug(u'截图, 保存为 %r' % _screenshot_filename)
         captcha_img.screenshot(_screenshot_filename)
         screenshot = Image.open(_screenshot_filename)
@@ -261,7 +280,20 @@ class Xiaomi(object):
         screenshot.close()
         img_crop.close()
         # 识别验证码
+        time.sleep(self.interval_time)
         return driver
+
+    def enter_qrcode(self, code, driver):
+        captcha = driver.find_element(self.get_by(self.rule['captcha']['type']), self.rule['captcha']['name'])
+        captcha.send_keys(code)
+        time.sleep(0.3)
+        # 登录
+        input_submit = driver.find_element(self.get_by(self.rule['submit']['type']),
+                                           self.rule['submit']['name'])
+        input_submit.click()
+        time.sleep(self.interval_time)
+        return driver
+
 
     def sms_check(self, driver):
         btn_sms_code_fetch = driver.find_element_by_xpath(self.rule['sms_code_fetch']['name'])
@@ -272,23 +304,21 @@ class Xiaomi(object):
         sms_code.send_keys(code)
         btn_sms_submit = driver.find_element_by_xpath(self.rule['sms_submit']['name'])
         btn_sms_submit.click()
-
-    def search_mibi(self, driver):
-        driver.get('https://mibi.wali.com/')
-        btn_login = driver.find_element_by_xpath('//*[@id="main_nav"]/div/nav[2]/a[1]')
-        btn_login.click()
         time.sleep(self.interval_time)
 
+    def search_mibi(self, driver):
+        # driver.get('https://mibi.wali.com/')
+        # btn_login = driver.find_element_by_xpath('//*[@id="main_nav"]/div/nav[2]/a[1]')
+        # btn_login.click()
+        # time.sleep(self.interval_time)
         btn_account = driver.find_element_by_xpath('//*[@id="sub_nav"]/nav/a[3]')
         btn_account.click()
         time.sleep(self.interval_time)
-
+        # driver.save_screenshot('output_%s.png' % int(time.time()))
         balance = driver.find_element_by_xpath('//*[@id="main_wrapper"]/div[2]/span[2]/em')
         gift = driver.find_element_by_xpath('//*[@id="main_wrapper"]/div[2]/span[3]/a')
         return balance.text, gift.text
 
 
 if __name__ == '__main__':
-
     xm = Xiaomi()
-

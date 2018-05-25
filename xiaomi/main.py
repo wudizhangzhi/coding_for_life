@@ -34,10 +34,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_select.pressed.connect(self.showDialog)
         # xiaomi
         self.xiaomi = Xiaomi()
+        self.error_count = {}
+        self.MAX_ERROR_COUNT = 5
 
         self.show()
 
     def start_search_balance(self):
+        # 更新最大错误次数
+        self.MAX_ERROR_COUNT = int(self.textEdit_4.toPlainText())
         # 重置
         self.progressBar.setValue(0)
         self.textBrowser.append('-' * 40)
@@ -60,20 +64,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QApplication.processEvents()
                 # 登陆
                 driver = self.xiaomi.login(username, password)
-                # 如果需要验证码
-                yum_username = self.textEdit_2.toPlainText()
-                yum_password = self.textEdit_3.toPlainText()
-                if self.checkBox.isChecked() and yum_username and yum_password:
+                if self.xiaomi.need_qrcode(driver):
+                    # 如果需要验证码
+                    yum_username = self.textEdit_2.toPlainText()
+                    yum_password = self.textEdit_3.toPlainText()
                     logging.debug('云打码用户名: {}  密码{}'.format(yum_username, yum_password))
-                    # 识别验证码
-                    file = 'qrcode/captcha_%s.png' % username
-                    result, balance = recognize_by_http(file, yum_username, yum_password)
-                    # 更新显示
-                    self.textBrowser.append('云打码余额: {}, 识别结果: {}'.format(balance, result))
-                    QApplication.processEvents()
-                    driver = self.xiaomi.enter_sms_code(result, driver)
+                    if self.checkBox.isChecked() and yum_username and yum_password:
+                        self.xiaomi.check_qrcode(driver, username)
+                        # 识别验证码
+                        file = 'qrcode/captcha_%s.png' % username
+                        result, balance = recognize_by_http(file, yum_username, yum_password)
+                        # 更新显示
+                        self.textBrowser.append('云打码余额: {}, 识别结果: {}'.format(balance, result))
+                        QApplication.processEvents()
+                        driver = self.xiaomi.enter_qrcode(result, driver)
+                    else:  # TODO 显示验证码？
+                        pass
                 else:
-                    pass
+                    logging.debug('不需要验证码: {}'.format(username))
+
+                if self.xiaomi.need_sms_code(driver):
+                    self.xiaomi.sms_check(driver)
+                    sms_text = self.getSMSText()
+                    self.xiaomi.enter_sms_code(sms_text)
 
                 # 开始查询
                 balance, userTicketBalance = self.xiaomi.search_mibi(driver)
@@ -95,7 +108,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.textBrowser.append(str(e))
                 self.progressBar.setValue(count * 100.0 / self.total)
                 QApplication.processEvents()
-                results.append([username, '失败', '失败'])
+                if username in self.error_count and self.error_count[username] > self.MAX_ERROR_COUNT:
+                    results.append([username, '失败', '失败'])
+                else:
+                    self.lines.append(line.encode('gbk'))
+                    self.textBrowser.append('重新放入队尾')
+                    count -= 1
+                    err = self.error_count.get(username, 0)
+                    self.error_count[username] = err + 1
+                    self.progressBar.setValue(count * 100.0 / self.total)
                 continue
         logging.debug(results)
         self.textBrowser.append('开始导出结果到 output.txt')
@@ -113,11 +134,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.textBrowser.append('请选择文件!!!')
 
-    def getText(self):
+    def getSMSText(self):
         text, okPressed = QInputDialog.getText(self, "Get text", "请输入短信验证码:", QLineEdit.Normal, "")
         if okPressed and text != '':
             print(text)
             self.textBrowser.append('输入的短信验证码：%s' % text)
+            return text
+        return False
 
 
 if __name__ == '__main__':
