@@ -53,7 +53,7 @@ def main():
     try:
         print('--------------------------------')
         print('''
-            请访问http://{}/vivo
+            请访问http://127.0.0.1/vivo
             [GET]: 参数:
                     username:用户名
                     password:密码
@@ -76,7 +76,7 @@ def main():
                     }
                   }
                 ]
-        '''.format(get_host_ip()))
+        ''')
         print('--------------------------------')
         app.run(host='0.0.0.0', port=80)
     except Exception as e:
