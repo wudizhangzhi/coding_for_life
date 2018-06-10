@@ -1,10 +1,12 @@
+import datetime
 import logging
 import time
+
+import sys
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import os
-import operator
 import traceback
 from xiaomi import Xiaomi
 
@@ -16,6 +18,8 @@ logging.basicConfig(level=logging.DEBUG,
                     datefmt='%a, %d %b %Y %H:%M:%S',
                     filename='log.log',
                     filemode='w')
+
+ENCODING = 'gbk'
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -36,12 +40,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.xiaomi = Xiaomi()
         self.error_count = {}
         self.MAX_ERROR_COUNT = 5
+        self.proxy_pool = ()
 
         self.show()
 
     def start_search_balance(self):
         # 更新最大错误次数
         self.MAX_ERROR_COUNT = int(self.textEdit_4.toPlainText())
+        proxy_url, white_url = self.getProxySettings()
+        is_trunon_proxy = self.checkBox_2.isChecked()  # 是否打开代理ip
+        proxy_interval = int(self.textEdit_7.toPlainText())  # 代理ip更换间隔
         # 重置
         self.progressBar.setValue(0)
         self.textBrowser.append('-' * 40)
@@ -57,13 +65,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         results = []
         for line in self.lines:
             count += 1
-            line = line.decode('gbk')
+            line = line.decode(ENCODING)
             username, password = line.split('----')
+            driver = None
             try:
                 self.textBrowser.append('开始查询: {}, 第{}个'.format(username, count))
                 QApplication.processEvents()
                 # 登陆
-                driver = self.xiaomi.login(username, password)
+                proxy = None
+                if is_trunon_proxy:
+                    is_fetch_proxy = True
+                    if len(self.proxy_pool) > 0:
+                        ip_port, expire_time = self.proxy_pool
+                        expire_datetime = datetime.datetime.strptime(expire_time, '%Y-%m-%d %H:%M:%S')
+                        if expire_datetime > datetime.datetime.now():
+                            is_fetch_proxy = False
+                    if is_fetch_proxy:
+                        ip_port, expire_time = self.xiaomi._fetch_proxy(proxy_url, white_url)
+                        # 保存
+                        self.proxy_pool = (ip_port, expire_time)
+                    logging.debug('使用代理ip: {}'.format(ip_port))
+                    # 更新显示
+                    self.textBrowser.append('使用代理ip: {}'.format(ip_port))
+                    QApplication.processEvents()
+                    proxy = 'http://{}/'.format(ip_port)
+
+                driver = self.xiaomi.login(username, password, proxy=proxy)
                 if self.xiaomi.need_qrcode(driver):
                     # 如果需要验证码
                     yum_username = self.textEdit_2.toPlainText()
@@ -90,6 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 # 开始查询
                 balance, userTicketBalance = self.xiaomi.search_mibi(driver)
+                driver.close()
                 # if int(ret.get('respCode', 0)) != 200:
                 #     self.textBrowser.append('错误: {}'.format(ret))
                 #     logging.error(ret)
@@ -99,6 +127,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 results.append([username, balance, userTicketBalance])
                 # 更新显示
                 self.textBrowser.append('余额:{}, 礼券余额:{}'.format(balance, userTicketBalance))
+                with open('output.txt', 'a') as f:
+                    f.write('用户名:{}, 余额:{}, 礼券余额: {}\r\n'.format(*[username, balance, userTicketBalance]))
                 self.progressBar.setValue(count * 100.0 / self.total)
                 QApplication.processEvents()
             except Exception as e:
@@ -111,20 +141,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if username in self.error_count and self.error_count[username] > self.MAX_ERROR_COUNT:
                     results.append([username, '失败', '失败'])
                 else:
-                    self.lines.append(line.encode('gbk'))
+                    self.lines.append(line.encode(ENCODING))
                     self.textBrowser.append('重新放入队尾')
                     count -= 1
                     err = self.error_count.get(username, 0)
                     self.error_count[username] = err + 1
                     self.progressBar.setValue(count * 100.0 / self.total)
+                if driver:
+                    driver.close()
                 continue
         logging.debug(results)
-        self.textBrowser.append('开始导出结果到 output.txt')
-        QApplication.processEvents()
-        # 导出文件
-        with open('output.txt', 'w') as f:
-            for r in results:
-                f.write('用户名:{}, 余额:{}, 礼券余额: {}\r\n'.format(*r))
+        # self.textBrowser.append('开始导出结果到 output.txt')
+        # QApplication.processEvents()
+        # # 导出文件
+        # with open('output.txt', 'w') as f:
+        #     for r in results:
+        #         f.write('用户名:{}, 余额:{}, 礼券余额: {}\r\n'.format(*r))
         self.textBrowser.append('完成! 用时: {}s'.format(time.time() - starttime))
 
     def showDialog(self):
@@ -142,10 +174,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return text
         return False
 
+    def getProxySettings(self):
+        """
+        获取Proxy的设置
+        :return: 
+        """
+        url = self.textEdit_5.toPlainText()
+        white_url = self.textEdit_6.toPlainText()
+        return url, white_url
+
 
 if __name__ == '__main__':
-    app = QApplication([])
-    app.setApplicationName("Xiaomi")
+    try:
+        app = QApplication([])
+        app.setApplicationName("Xiaomi")
 
-    window = MainWindow()
-    app.exec_()
+        window = MainWindow()
+        sys.exit(app.exec_())
+    except Exception as e:
+        logging.error(traceback.format_exc())

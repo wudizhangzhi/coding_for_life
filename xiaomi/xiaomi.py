@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2018/5/24 下午8:28
 # @Author  : wudizhangzhi
+import datetime
 import json
 import logging
 import os
@@ -9,8 +10,7 @@ import shutil
 
 import requests
 from PIL import Image
-from user_agent import generate_user_agent
-from lxml import etree
+# from user_agent import generate_user_agent
 import re
 import time
 from hashlib import md5
@@ -22,7 +22,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import DesiredCapabilities
 
-from cookie_save import ACCOUNT_LIST
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -60,20 +59,23 @@ RULE = {
 class Xiaomi(object):
     def __init__(self):
         self.session = requests.Session()
-        self.headers = {
-            'User-Agent': generate_user_agent(os=['mac', 'linux']),
-            'Host': 'account.xiaomi.com',
-            'Upgrade-Insecure-Requests': '1',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-        }
-        self.session.headers = self.headers
+        # self.headers = {
+        #     'User-Agent': generate_user_agent(os=['mac', 'linux']),
+        #     'Host': 'account.xiaomi.com',
+        #     'Upgrade-Insecure-Requests': '1',
+        #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+        #     'Accept-Encoding': 'gzip, deflate, br',
+        #     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+        # }
+        # self.session.headers = self.headers
         # selenium settings
         self.rule = RULE
-        self.interval_time = 1
+        self.interval_time = 0.5
+        self.proxy = None
+        self.add_to_white = False
         # init folder
-        shutil.rmtree('qrcode')
+        if os.path.exists('qrcode'):
+            shutil.rmtree('qrcode')
         os.mkdir('qrcode')
 
     def _login(self, username, password):
@@ -294,7 +296,6 @@ class Xiaomi(object):
         time.sleep(self.interval_time)
         return driver
 
-
     def sms_check(self, driver):
         btn_sms_code_fetch = driver.find_element_by_xpath(self.rule['sms_code_fetch']['name'])
         btn_sms_code_fetch.click()
@@ -319,6 +320,54 @@ class Xiaomi(object):
         gift = driver.find_element_by_xpath('//*[@id="main_wrapper"]/div[2]/span[3]/a')
         return balance.text, gift.text
 
+    def _add_to_while(self, white_url, ip):
+        try:
+            r = requests.get(white_url + ip, timeout=10)
+            if r.json()['code'] == 0:
+                logging.debug('保存白名单成功: {}'.format(ip))
+            else:
+                logging.debug(r.text)
+        except Exception as e:
+            print(e)
+
+    def _get_proxy_balance(self, balance_url):
+        try:
+            r = requests.get(balance_url, timeout=10)
+            if r.json()['code'] == 0:
+                logging.debug('账户余额: {}'.format(r.json()['data']['balance']))
+            else:
+                logging.debug(r.text)
+        except Exception as e:
+            print(e)
+
+    def _fetch_proxy(self, ip_url, white_url, balance_url=None):
+        '''
+        获取代理ip
+        :return: str: ip:port
+        '''
+        r = requests.get(ip_url.strip(), timeout=10)
+        j = r.json()
+        if not j['code'] == 0:
+            logging.debug(r.text)
+            if j['code'] == 113:
+                match = re.findall(r'(\d+\.\d+\.\d+\.\d+)', j['msg'])
+                if match:
+                    self._add_to_while(white_url.strip(), match[0].strip())
+                    if not self.add_to_white:
+                        time.sleep(3)
+                        return self._fetch_proxy(ip_url, white_url.strip(), balance_url)
+        else:
+            ip_port = ':'.join((j['data'][0]['ip'], str(j['data'][0]['port'])))
+            expire_time = j['data'][0].get('expire_time',
+                                           (datetime.datetime.now() + datetime.timedelta(minutes=10)).strftime(
+                                               '%Y-%m-%d %H:%M:%S'))
+            # self._get_proxy_balance(balance_url)
+            return ip_port, expire_time
+
 
 if __name__ == '__main__':
     xm = Xiaomi()
+    print(xm._fetch_proxy(
+        'http://webapi.http.zhimacangku.com/getip?num=1&type=2&pro=&city=0&yys=0&port=1&time=1&ts=1&ys=0&cs=0&lb=1&sb=0&pb=4&mr=1&regions=',
+        'http://web.http.cnapi.cc/index/index/save_white?neek=33481&appkey=d212e2fefa6c9648b33f38051fcd9bd5&white=',
+        'http://web.http.cnapi.cc/index/index/get_my_balance?neek=33481&appkey=d212e2fefa6c9648b33f38051fcd9bd5'))
