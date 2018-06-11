@@ -6,10 +6,12 @@ import time
 import requests
 import traceback
 from flask import request
+
 app = Flask(__name__)
 """
 mount -o remount,rw /system # allow to write
 """
+
 
 def get_host_ip():
     try:
@@ -21,32 +23,30 @@ def get_host_ip():
 
     return ip
 
+
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
 
 
-
 @app.route('/vivo', methods=['POST', 'GET'])
 def vivo():
     response = []
+    imei = request.args.get('imei', '')
+    model = request.args.get('model', '')
     if request.method == 'POST':
         accounts = request.form.getlist('accounts')
         for account in accounts:
             print(account)
             username, password = account.split('----')
-            ret = get_balance(username=username, password=password)
-            response.append({username:ret})
+            ret = get_balance(username=username, password=password, _imei=imei, _model=model)
+            response.append({username: ret})
     else:
         username = request.args.get('username', '')
         password = request.args.get('password', '')
-        ret = get_balance(username=username, password=password)
-        response.append({username:ret})
+        ret = get_balance(username=username, password=password, _imei=imei, _model=model)
+        response.append({username: ret})
     return json.dumps(response)
-
-
-
-
 
 
 def main():
@@ -57,6 +57,8 @@ def main():
             [GET]: 参数:
                     username:用户名
                     password:密码
+                    imei:imei
+                    model:型号名字
             [POST]: 参数:
                     accounts: [
                                 'username----password',
@@ -82,6 +84,7 @@ def main():
     except Exception as e:
         print(e)
         a = input('回车结束')
+
 
 if __name__ == "__main__":
     main()

@@ -54,10 +54,10 @@ def get_android_id():
     return hex(int(result, base=2))[2:]
 
 
-def get_balance(username, password):
-    imei = get_random_Imei()
+def get_balance(username, password, _imei=None, _model=None):
+    imei = _imei or get_random_Imei()
     # model = "ONEPLUS+A3010"
-    model = imei
+    model = _model or imei
 
     username_sec = username[:3] + '****' + username[7:]
     session = requests.Session()
