@@ -54,7 +54,7 @@ def genid():
     data = {
 
     }
-    print(request)
+    # print(request)
     return json.dumps(data)
 
 
